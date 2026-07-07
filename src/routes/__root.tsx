@@ -78,22 +78,26 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "KidsMath Cards — Print & Play Math Card Game" },
+      { title: "Kids Math Uno" },
       {
         name: "description",
         content:
-          "192 printable math cards across 4 operations, plus digital play, AI story problems and progress tracking for kids.",
+          "Uno Math Adventures offers interactive math card games for kids, with printable decks and digital play modes.",
       },
       { name: "author", content: "KidsMath Cards" },
       { name: "theme-color", content: "#F97316" },
-      { property: "og:title", content: "KidsMath Cards — Print & Play Math Card Game" },
+      { property: "og:title", content: "Kids Math Uno" },
       {
         property: "og:description",
         content:
-          "192 printable math cards across 4 operations, plus digital play, AI story problems and progress tracking for kids.",
+          "Uno Math Adventures offers interactive math card games for kids, with printable decks and digital play modes.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Kids Math Uno" },
+      { name: "twitter:description", content: "Uno Math Adventures offers interactive math card games for kids, with printable decks and digital play modes." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/cfbb4fcc-fe4a-4d2a-b119-223efb5f9112/id-preview-be09e186--7c1c59f9-4a55-49b1-8b25-60a73348560a.lovable.app-1783459950787.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/cfbb4fcc-fe4a-4d2a-b119-223efb5f9112/id-preview-be09e186--7c1c59f9-4a55-49b1-8b25-60a73348560a.lovable.app-1783459950787.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

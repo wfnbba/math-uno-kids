@@ -9,10 +9,10 @@ import { InstallButton } from "@/components/InstallButton";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "KidsMath Cards — Your Card Decks" },
+      { title: "Kids Math Uno" },
       {
         name: "description",
-        content: "Download 192 printable math cards across 4 operations. Print, cut, play and learn!",
+        content: "Uno Math Adventures offers interactive math card games for kids, with printable decks and digital play modes.",
       },
     ],
   }),
