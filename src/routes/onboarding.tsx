@@ -2,8 +2,11 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import confetti from "canvas-confetti";
 import mascot from "@/assets/mascot.png";
-import { saveProfile, applyTheme, themeForGender, type Profile, type Gender } from "@/lib/store";
+import { saveProfile, applyTheme, themeForGender, getProfile, type Profile, type Gender } from "@/lib/store";
 import { playWin } from "@/lib/sounds";
+import { InstallButton } from "@/components/InstallButton";
+import { useInstallPrompt } from "@/hooks/use-install-prompt";
+
 
 export const Route = createFileRoute("/onboarding")({
   head: () => ({
