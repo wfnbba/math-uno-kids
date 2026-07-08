@@ -33,15 +33,17 @@ const TOPICS = [
   { value: "superheroes", emoji: "🦸" },
 ];
 
-const STEPS = 5;
+const STEPS = 6;
 
 function Onboarding() {
   const navigate = useNavigate();
+  const existing = typeof window !== "undefined" ? getProfile() : null;
   const [step, setStep] = useState(0);
-  const [gender, setGender] = useState<Gender | null>(null);
-  const [name, setName] = useState("");
-  const [level, setLevel] = useState<1 | 2 | 3>(1);
-  const [topic, setTopic] = useState("dinosaurs");
+  const [gender, setGender] = useState<Gender | null>(existing?.gender ?? null);
+  const [name, setName] = useState(existing?.name ?? "");
+  const [level, setLevel] = useState<1 | 2 | 3>(existing?.level ?? 1);
+  const [topic, setTopic] = useState(existing?.topic ?? "dinosaurs");
+  const { canInstall } = useInstallPrompt();
 
   const pickGender = (g: Gender) => {
     setGender(g);
@@ -63,8 +65,9 @@ function Onboarding() {
     saveProfile(profile);
     playWin();
     void confetti({ particleCount: 140, spread: 90, origin: { y: 0.6 } });
-    setTimeout(() => void navigate({ to: "/" }), 900);
+    setStep(5);
   };
+
 
   return (
     <div className="mx-auto flex min-h-screen max-w-md flex-col px-6 py-8">
