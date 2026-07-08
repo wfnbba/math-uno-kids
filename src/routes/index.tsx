@@ -47,6 +47,11 @@ function Index() {
 
   return (
     <div className="mx-auto min-h-screen max-w-md px-4 pb-28 pt-6">
+      {/* Sticky Install Button — disappears once installed */}
+      <div className="sticky top-2 z-40 mb-4">
+        <InstallButton />
+      </div>
+
       {/* HERO */}
       <section className="shadow-pop mb-6 overflow-hidden rounded-3xl border-4 border-border bg-gradient-to-br from-fun-red via-fun-yellow to-fun-green p-6 text-center animate-pop-in">
         <p className="font-display text-sm font-extrabold uppercase tracking-widest text-primary-foreground/90">
@@ -70,9 +75,6 @@ function Index() {
         )}
       </section>
 
-      <div className="mb-6">
-        <InstallButton />
-      </div>
 
       {/* DECK BOXES */}
       <section className="mb-4">
