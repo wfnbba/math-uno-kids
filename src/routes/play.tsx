@@ -1,200 +1,145 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import confetti from "canvas-confetti";
-import { OPERATIONS, OP_META, recordAnswer, awardBadge, type Operation } from "@/lib/store";
-import { generateRound, type Question } from "@/lib/questions";
+import { PHASES, type Phase } from "@/lib/roadmap";
+import { getRoadmap, saveRoadmapStars, awardBadge, recordAnswer, type RoadmapProgress } from "@/lib/store";
 import { playWin } from "@/lib/sounds";
-import { QuizCard } from "@/components/QuizCard";
 import { BottomNav } from "@/components/BottomNav";
 import { useRequireProfile } from "@/hooks/use-require-profile";
+import { MiniGameRunner } from "@/components/MiniGames";
 
 export const Route = createFileRoute("/play")({
   head: () => ({
     meta: [
-      { title: "Play on Screen — KidsMath Cards" },
-      { name: "description", content: "Play math flashcard quizzes solo or multiplayer, no printer needed." },
+      { title: "Math Road — Kids Math Uno" },
+      { name: "description", content: "Travel the Math Road: 10 fun mini-games with fruits, animals, and challenges!" },
     ],
   }),
   component: Play,
 });
 
-type Mode = "solo" | "duo";
-type Phase = "pick-mode" | "pick-op" | "playing" | "done";
+type Phase_ = "roadmap" | "playing" | "done";
 
-const ROUND_SIZE = 10;
+function computeStars(correct: number, total: number): number {
+  const pct = correct / total;
+  if (pct >= 0.9) return 3;
+  if (pct >= 0.65) return 2;
+  if (pct >= 0.35) return 1;
+  return 0;
+}
 
 function Play() {
   const { profile, ready } = useRequireProfile();
-  const [mode, setMode] = useState<Mode>("solo");
-  const [phase, setPhase] = useState<Phase>("pick-mode");
-  const [op, setOp] = useState<Operation>("addition");
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [index, setIndex] = useState(0);
-  const [scores, setScores] = useState<[number, number]>([0, 0]);
+  const [rm, setRm] = useState<RoadmapProgress>({ currentPhase: 1, stars: {} });
+  const [screen, setScreen] = useState<Phase_>("roadmap");
+  const [phase, setPhase] = useState<Phase | null>(null);
+  const [result, setResult] = useState<{ stars: number; correct: number; total: number } | null>(null);
+
+  useEffect(() => {
+    setRm(getRoadmap());
+  }, []);
 
   if (!ready || !profile) {
-    return <div className="flex min-h-screen items-center justify-center font-display text-2xl font-extrabold">Loading... 🦊</div>;
+    return (
+      <div className="flex min-h-screen items-center justify-center font-display text-2xl font-extrabold">
+        Loading... 🦊
+      </div>
+    );
   }
 
-  const start = (operation: Operation) => {
-    setOp(operation);
-    setQuestions(generateRound(operation, profile.level, ROUND_SIZE));
-    setIndex(0);
-    setScores([0, 0]);
-    setPhase("playing");
+  const openPhase = (p: Phase) => {
+    if (p.id > rm.currentPhase) return;
+    setPhase(p);
+    setResult(null);
+    setScreen("playing");
   };
 
-  const currentPlayer = mode === "duo" ? index % 2 : 0;
-  const playerNames: [string, string] = [profile.name, "Player 2"];
-
-  const handleAnswer = (correct: boolean) => {
-    if (correct) {
-      setScores((s) => {
-        const next: [number, number] = [...s];
-        next[currentPlayer] += 1;
-        return next;
-      });
+  const handleComplete = (correct: number, total: number) => {
+    if (!phase) return;
+    const stars = computeStars(correct, total);
+    // record answers so parent dashboard reflects
+    if (phase.op) {
+      for (let k = 0; k < correct; k++) recordAnswer(phase.op, true);
+      for (let k = 0; k < total - correct; k++) recordAnswer(phase.op, false);
     }
-    // only track the child's answers in solo, or player 1's answers in duo
-    if (currentPlayer === 0) recordAnswer(op, correct);
-
-    if (index + 1 >= questions.length) {
-      setPhase("done");
+    const next = saveRoadmapStars(phase.id, stars);
+    setRm(next);
+    setResult({ stars, correct, total });
+    setScreen("done");
+    if (stars >= 1) {
       playWin();
-      void confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
-      const soloScore = correct ? scores[0] + 1 : scores[0];
-      if (mode === "solo" && soloScore === ROUND_SIZE) awardBadge("perfect-round");
-    } else {
-      setIndex((i) => i + 1);
+      void confetti({ particleCount: 120, spread: 90, origin: { y: 0.6 } });
+      awardBadge("explorer");
+      if (phase.id === PHASES.length && stars >= 2) awardBadge("boss-slayer");
     }
   };
 
   return (
     <div className="mx-auto min-h-screen max-w-md px-4 pb-28 pt-6">
-      <h1 className="mb-6 text-center font-display text-3xl font-extrabold text-primary">Play on Screen 🎮</h1>
+      {screen === "roadmap" && (
+        <RoadmapView profile={profile.name} rm={rm} onOpen={openPhase} />
+      )}
 
-      {phase === "pick-mode" && (
-        <div className="space-y-4 animate-pop-in">
+      {screen === "playing" && phase && (
+        <div>
           <button
-            onClick={() => {
-              setMode("solo");
-              setPhase("pick-op");
-            }}
-            className="btn-bounce shadow-pop w-full rounded-3xl border-4 border-border bg-card p-6 text-left"
+            onClick={() => setScreen("roadmap")}
+            className="mb-3 font-display text-sm font-bold text-muted-foreground underline"
           >
-            <span className="text-4xl">🧒</span>
-            <span className="mt-2 block font-display text-2xl font-extrabold">Solo Quest</span>
-            <span className="text-base font-bold text-muted-foreground">Answer 10 cards on your own!</span>
+            ← Back to Map
           </button>
-          <button
-            onClick={() => {
-              setMode("duo");
-              setPhase("pick-op");
-            }}
-            className="btn-bounce shadow-pop w-full rounded-3xl border-4 border-border bg-card p-6 text-left"
-          >
-            <span className="text-4xl">👨‍👧</span>
-            <span className="mt-2 block font-display text-2xl font-extrabold">2 Players</span>
-            <span className="text-base font-bold text-muted-foreground">
-              Take turns with a parent, sibling or friend!
-            </span>
-          </button>
+          <div className={`shadow-pop mb-4 rounded-3xl bg-${phase.color} p-4 text-center`}>
+            <span className="text-3xl">{phase.emoji}</span>
+            <h2 className="font-display text-xl font-extrabold text-primary-foreground">
+              Phase {phase.id}: {phase.name}
+            </h2>
+            <p className="text-sm font-bold text-primary-foreground/90">{phase.desc}</p>
+          </div>
+          <MiniGameRunner phase={phase} level={profile.level} onComplete={handleComplete} />
         </div>
       )}
 
-      {phase === "pick-op" && (
-        <div className="animate-pop-in">
-          <h2 className="mb-4 text-center font-display text-xl font-extrabold">Pick an operation!</h2>
-          <div className="grid grid-cols-2 gap-3">
-            {OPERATIONS.map((operation) => (
-              <button
-                key={operation}
-                onClick={() => start(operation)}
-                className={`btn-bounce shadow-pop rounded-3xl bg-${OP_META[operation].color} p-6 text-center`}
-              >
-                <span className="block font-display text-5xl font-extrabold text-primary-foreground">
-                  {OP_META[operation].symbol}
-                </span>
-                <span className="mt-1 block font-display text-lg font-extrabold text-primary-foreground">
-                  {OP_META[operation].label}
-                </span>
-              </button>
+      {screen === "done" && phase && result && (
+        <div className="text-center animate-pop-in">
+          <span className="text-7xl">{result.stars > 0 ? "🏆" : "😅"}</span>
+          <h2 className="mt-4 font-display text-3xl font-extrabold">
+            {result.stars > 0 ? "Phase Complete!" : "So close! Try again!"}
+          </h2>
+          <div className="mt-4 flex justify-center gap-2">
+            {[1, 2, 3].map((s) => (
+              <span key={s} className={`text-5xl ${s <= result.stars ? "" : "opacity-25 grayscale"}`}>
+                ⭐
+              </span>
             ))}
           </div>
-          <button
-            onClick={() => setPhase("pick-mode")}
-            className="mt-6 w-full text-center font-display text-base font-bold text-muted-foreground underline"
-          >
-            ← Back
-          </button>
-        </div>
-      )}
-
-      {phase === "playing" && questions[index] && (
-        <div>
-          {mode === "duo" && (
-            <div className="mb-4 flex justify-center gap-4">
-              {playerNames.map((n, i) => (
-                <div
-                  key={n}
-                  className={`rounded-2xl border-4 px-4 py-2 font-display text-sm font-extrabold ${
-                    currentPlayer === i ? "border-primary bg-primary/10" : "border-border bg-card text-muted-foreground"
-                  }`}
-                >
-                  {n}: {scores[i]} ⭐
-                </div>
-              ))}
-            </div>
-          )}
-          <QuizCard
-            question={questions[index]}
-            index={index}
-            total={questions.length}
-            playerLabel={mode === "duo" ? playerNames[currentPlayer] : undefined}
-            onAnswer={handleAnswer}
-          />
-        </div>
-      )}
-
-      {phase === "done" && (
-        <div className="text-center animate-pop-in">
-          <span className="text-7xl">🏆</span>
-          <h2 className="mt-4 font-display text-3xl font-extrabold">Round Complete!</h2>
-          {mode === "solo" ? (
-            <p className="mt-2 font-display text-2xl font-extrabold text-primary">
-              {scores[0]} / {questions.length} correct!
-            </p>
-          ) : (
-            <div className="mt-4 space-y-2">
-              {playerNames.map((n, i) => (
-                <p key={n} className="font-display text-xl font-extrabold">
-                  {n}: {scores[i]} ⭐
-                </p>
-              ))}
-              <p className="mt-2 font-display text-2xl font-extrabold text-primary">
-                {scores[0] === scores[1]
-                  ? "It's a tie! 🤝"
-                  : `${playerNames[scores[0] > scores[1] ? 0 : 1]} wins! 🎉`}
-              </p>
-            </div>
-          )}
+          <p className="mt-3 font-display text-xl font-extrabold text-primary">
+            {result.correct} / {result.total} correct
+          </p>
           <div className="mt-8 space-y-3">
             <button
-              onClick={() => start(op)}
+              onClick={() => openPhase(phase)}
               className="btn-bounce shadow-pop w-full rounded-3xl bg-primary px-6 py-4 font-display text-lg font-extrabold text-primary-foreground"
             >
               Play Again 🔁
             </button>
+            {result.stars > 0 && phase.id < PHASES.length && (
+              <button
+                onClick={() => {
+                  const nxt = PHASES[phase.id]; // 1-based -> index = id
+                  if (nxt) openPhase(nxt);
+                }}
+                className="btn-bounce shadow-pop w-full rounded-3xl bg-fun-green px-6 py-4 font-display text-lg font-extrabold text-primary-foreground"
+              >
+                Next Phase ➡️
+              </button>
+            )}
             <button
-              onClick={() => setPhase("pick-op")}
+              onClick={() => setScreen("roadmap")}
               className="btn-bounce shadow-pop w-full rounded-3xl border-4 border-border bg-card px-6 py-4 font-display text-lg font-extrabold"
             >
-              Change Operation
+              🗺️ Back to Map
             </button>
-            <Link
-              to="/progress"
-              className="block w-full pt-2 text-center font-display text-base font-bold text-fun-purple underline"
-            >
+            <Link to="/progress" className="block pt-2 text-center font-display text-sm font-bold text-fun-purple underline">
               See my progress ⭐
             </Link>
           </div>
@@ -202,6 +147,77 @@ function Play() {
       )}
 
       <BottomNav />
+    </div>
+  );
+}
+
+function RoadmapView({
+  profile,
+  rm,
+  onOpen,
+}: {
+  profile: string;
+  rm: RoadmapProgress;
+  onOpen: (p: Phase) => void;
+}) {
+  const totalStars = useMemo(() => Object.values(rm.stars).reduce((s, n) => s + n, 0), [rm.stars]);
+  return (
+    <div>
+      <div className="mb-4 text-center">
+        <h1 className="font-display text-3xl font-extrabold text-primary">🗺️ Math Road</h1>
+        <p className="font-display text-sm font-bold text-muted-foreground">
+          {profile}, you have {totalStars} ⭐ · Reach the Boss at Phase 10!
+        </p>
+      </div>
+
+      <div className="relative">
+        {/* dashed path */}
+        <div className="pointer-events-none absolute inset-y-4 left-1/2 -z-0 w-1 -translate-x-1/2 rounded-full border-4 border-dashed border-border/70" />
+        <ol className="relative space-y-4">
+          {PHASES.map((p, idx) => {
+            const unlocked = p.id <= rm.currentPhase;
+            const stars = rm.stars[p.id] ?? 0;
+            const side = idx % 2 === 0 ? "left" : "right";
+            return (
+              <li key={p.id} className={`flex ${side === "right" ? "justify-end" : "justify-start"}`}>
+                <button
+                  disabled={!unlocked}
+                  onClick={() => onOpen(p)}
+                  className={`btn-bounce shadow-pop relative w-[85%] rounded-3xl border-4 p-4 text-left transition-all ${
+                    unlocked
+                      ? `border-border bg-${p.color} text-primary-foreground animate-float-up`
+                      : "border-border bg-muted text-muted-foreground opacity-60"
+                  }`}
+                  style={{ animationDelay: `${idx * 60}ms` }}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-card text-3xl">
+                      {unlocked ? p.emoji : "🔒"}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-display text-xs font-extrabold uppercase opacity-80">Phase {p.id}</p>
+                      <p className="font-display text-lg font-extrabold leading-tight">{p.name}</p>
+                      <p className="text-xs font-bold opacity-90">{p.desc}</p>
+                    </div>
+                  </div>
+                  <div className="mt-2 flex gap-1">
+                    {[1, 2, 3].map((s) => (
+                      <span key={s} className={`text-lg ${s <= stars ? "" : "opacity-30 grayscale"}`}>
+                        ⭐
+                      </span>
+                    ))}
+                    {p.id === rm.currentPhase && unlocked && (
+                      <span className="ml-auto rounded-full bg-card px-2 py-0.5 font-display text-[10px] font-extrabold text-foreground">
+                        NEXT ▶
+                      </span>
+                    )}
+                  </div>
+                </button>
+              </li>
+            );
+          })}
+        </ol>
+      </div>
     </div>
   );
 }
