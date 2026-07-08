@@ -331,6 +331,8 @@ export function TimedGame({ phase, level, onComplete }: MiniGameProps) {
   const [flash, setFlash] = useState<"ok" | "no" | null>(null);
   const doneRef = useRef(false);
 
+  const correctRef = useRef(0);
+
   useEffect(() => {
     const t = setInterval(() => {
       setTimeLeft((s) => {
@@ -338,9 +340,8 @@ export function TimedGame({ phase, level, onComplete }: MiniGameProps) {
           clearInterval(t);
           if (!doneRef.current) {
             doneRef.current = true;
-            // score out of a target: 8 correct answers = 3 stars
             const target = phase.kind === "boss" ? phase.rounds : 8;
-            onComplete(Math.min(correct, target), target);
+            onComplete(Math.min(correctRef.current, target), target);
           }
           return 0;
         }
@@ -357,7 +358,10 @@ export function TimedGame({ phase, level, onComplete }: MiniGameProps) {
     ok ? playDing() : playBuzz();
     setFlash(ok ? "ok" : "no");
     setTotal((t) => t + 1);
-    if (ok) setCorrect((c) => c + 1);
+    if (ok) {
+      correctRef.current += 1;
+      setCorrect((c) => c + 1);
+    }
     setTimeout(() => {
       setFlash(null);
       setQ(randomQuestion(phase, level));
