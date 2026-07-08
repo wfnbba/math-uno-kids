@@ -212,6 +212,28 @@ function Onboarding() {
           </button>
         </div>
       )}
+
+      {step === 5 && (
+        <div className="flex flex-1 flex-col justify-center text-center animate-pop-in">
+          <span className="text-6xl">📲</span>
+          <h1 className="mt-3 font-display text-3xl font-extrabold">Install the App!</h1>
+          <p className="mt-2 text-base font-bold text-muted-foreground">
+            {canInstall
+              ? "Tap below to add Kids Math Uno to your phone — play anytime, even offline!"
+              : "You can install this app from your browser menu — look for 'Add to Home Screen'."}
+          </p>
+          <div className="mt-6">
+            <InstallButton />
+          </div>
+          <button
+            onClick={() => void navigate({ to: "/" })}
+            className="btn-bounce shadow-pop mt-4 w-full rounded-3xl bg-primary px-6 py-5 font-display text-xl font-extrabold text-primary-foreground"
+          >
+            {canInstall ? "Maybe later — Enter app →" : "Enter app →"}
+          </button>
+        </div>
+      )}
     </div>
   );
+
 }
