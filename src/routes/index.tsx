@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { DECKS, downloadAll, downloadDeck } from "@/lib/decks";
 import { getProfile } from "@/lib/store";
@@ -30,10 +30,20 @@ const STEPS = [
 
 function Index() {
   const [name, setName] = useState<string | null>(null);
+  const [checked, setChecked] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    setName(getProfile()?.name ?? null);
-  }, []);
+    const p = getProfile();
+    if (!p) {
+      void navigate({ to: "/onboarding" });
+      return;
+    }
+    setName(p.name);
+    setChecked(true);
+  }, [navigate]);
+
+  if (!checked) return null;
 
   return (
     <div className="mx-auto min-h-screen max-w-md px-4 pb-28 pt-6">
