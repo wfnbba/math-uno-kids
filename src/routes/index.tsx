@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import mascot from "@/assets/mascot.png";
 import { DECKS, downloadAll, downloadDeck } from "@/lib/decks";
 import { getProfile } from "@/lib/store";
 import { BottomNav } from "@/components/BottomNav";
@@ -9,28 +8,24 @@ import { InstallButton } from "@/components/InstallButton";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Kids Math Uno" },
+      { title: "Kids Math Uno — 192 Printable Math Cards" },
       {
         name: "description",
-        content: "Uno Math Adventures offers interactive math card games for kids, with printable decks and digital play modes.",
+        content:
+          "Kids Math Uno: your 192 printable math cards across 4 operations. Download, print, cut and play a fun UNO-style game today!",
       },
     ],
   }),
   component: Index,
 });
 
-const PREP_STEPS = [
-  { emoji: "🖨️", lines: ["Print on", "cardstock"] },
-  { emoji: "✂️", lines: ["Cut along", "borders"] },
-  { emoji: "🎉", lines: ["Play &", "learn!"] },
-];
-
-const DECK_CONTENTS = [
-  { label: "Question Cards", value: "20 (5 pages)" },
-  { label: "Answer Cards", value: "20 (5 pages)" },
-  { label: "Power Cards", value: "8 (2 pages)" },
-  { label: "Card Backs", value: "Included on each page" },
-  { label: "Box Template", value: "1 page" },
+const STEPS = [
+  { emoji: "⬇️", title: "Download", desc: "Grab your PDF decks below." },
+  { emoji: "🖨️", title: "Print", desc: "Print on cardstock for durability." },
+  { emoji: "✂️", title: "Cut", desc: "Cut along the borders — ask a grown-up!" },
+  { emoji: "🃏", title: "Deal 7", desc: "Every player gets 7 cards." },
+  { emoji: "🧠", title: "Solve", desc: "Read the operation and find the answer." },
+  { emoji: "🎉", title: "Play & Win", desc: "First to empty their hand wins!" },
 ];
 
 function Index() {
@@ -42,160 +37,135 @@ function Index() {
 
   return (
     <div className="mx-auto min-h-screen max-w-md px-4 pb-28 pt-6">
-      {/* Header */}
-      <header className="mb-6 text-center">
-        <h1 className="font-display text-3xl font-extrabold tracking-tight text-primary">
-          KIDSMATH CARDS
+      {/* HERO */}
+      <section className="shadow-pop mb-6 overflow-hidden rounded-3xl border-4 border-border bg-gradient-to-br from-fun-red via-fun-yellow to-fun-green p-6 text-center animate-pop-in">
+        <p className="font-display text-sm font-extrabold uppercase tracking-widest text-primary-foreground/90">
+          Kids Math UNO
+        </p>
+        <h1 className="mt-1 font-display text-4xl font-extrabold leading-tight text-primary-foreground drop-shadow-md">
+          Your 192 Math Cards
         </h1>
+        <p className="mt-2 font-display text-lg font-extrabold text-primary-foreground/95">
+          Download · Print · Play Today! 🎉
+        </p>
         {name ? (
-          <p className="mt-1 font-display text-lg font-bold">Hi, {name}! 👋</p>
+          <p className="mt-3 font-display text-base font-bold text-primary-foreground">Hi, {name}! 👋 Ready to play?</p>
         ) : (
-          <Link to="/onboarding" className="mt-1 inline-block font-display text-sm font-bold text-fun-purple underline">
-            Set up your profile →
+          <Link
+            to="/onboarding"
+            className="btn-bounce mt-4 inline-block rounded-2xl bg-card px-5 py-2 font-display text-sm font-extrabold text-primary"
+          >
+            Set up my profile →
           </Link>
         )}
-      </header>
-
-      {/* Hero */}
-      <section className="shadow-pop mb-6 rounded-3xl border-4 border-border bg-card p-6 text-center animate-float-up">
-        <img
-          src={mascot}
-          alt="KidsMath fox mascot holding number cards"
-          width={768}
-          height={768}
-          className="mx-auto mb-3 h-36 w-36 animate-bounce-soft"
-        />
-        <h2 className="font-display text-2xl font-extrabold">Your Card Decks</h2>
-        <p className="mt-1 text-base font-bold text-muted-foreground">
-          192 cards across 4 operations. Download, print & play!
-        </p>
       </section>
 
       <div className="mb-6">
         <InstallButton />
       </div>
 
-      {/* Decks */}
-      <section className="mb-4 space-y-4">
-        {DECKS.map((deck, i) => (
-          <div
-            key={deck.op}
-            className="shadow-pop flex items-center gap-4 rounded-3xl border-4 border-border bg-card p-4 animate-float-up"
-            style={{ animationDelay: `${i * 80}ms` }}
-          >
-            <div className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl ${deck.bg}`}>
-              <span className="font-display text-4xl font-extrabold text-primary-foreground">{deck.symbol}</span>
-            </div>
-            <div className="min-w-0 flex-1">
-              <h3 className="font-display text-xl font-extrabold">{deck.name}</h3>
-              <p className="text-sm font-bold text-muted-foreground">48 cards · 13 pages</p>
-            </div>
+      {/* DECK BOXES */}
+      <section className="mb-4">
+        <h2 className="mb-1 text-center font-display text-2xl font-extrabold">Pick Your Deck</h2>
+        <p className="mb-4 text-center text-sm font-bold text-muted-foreground">
+          Tap a box to download · 48 cards each · 13 pages
+        </p>
+        <div className="grid grid-cols-2 gap-3">
+          {DECKS.map((deck, i) => (
             <button
+              key={deck.op}
               onClick={() => downloadDeck(deck)}
-              className="btn-bounce shadow-pop shrink-0 rounded-2xl bg-primary px-4 py-3 font-display text-sm font-extrabold text-primary-foreground"
+              className={`btn-bounce shadow-pop group flex flex-col items-center overflow-hidden rounded-3xl border-4 border-border ${deck.bg} p-2 text-center animate-float-up`}
+              style={{ animationDelay: `${i * 80}ms` }}
             >
-              Download
-              <br />
-              PDF
+              <img
+                src={deck.image}
+                alt={`${deck.name} card game box`}
+                loading="lazy"
+                width={1024}
+                height={1024}
+                className="h-32 w-full rounded-2xl object-contain drop-shadow-lg transition-transform group-hover:scale-105"
+              />
+              <span className="mt-2 font-display text-lg font-extrabold text-primary-foreground">{deck.name}</span>
+              <span className="text-xs font-bold text-primary-foreground/90">{deck.tagline}</span>
+              <span className="mt-1 rounded-full bg-card/95 px-3 py-1 font-display text-xs font-extrabold text-foreground">
+                ⬇️ Download PDF
+              </span>
             </button>
-          </div>
-        ))}
+          ))}
+        </div>
       </section>
 
       <button
         onClick={downloadAll}
-        className="btn-bounce shadow-pop mb-8 w-full rounded-3xl bg-fun-blue px-6 py-4 font-display text-lg font-extrabold text-primary-foreground"
+        className="btn-bounce shadow-pop mb-8 mt-4 w-full rounded-3xl bg-fun-purple px-6 py-4 font-display text-lg font-extrabold text-primary-foreground"
       >
         ⬇️ Download All 4 Decks (192 Cards)
       </button>
 
-      {/* How to Prepare */}
-      <section className="mb-8">
-        <h2 className="mb-4 text-center font-display text-2xl font-extrabold">How to Prepare</h2>
-        <div className="grid grid-cols-3 gap-3">
-          {PREP_STEPS.map((step) => (
-            <div key={step.emoji} className="shadow-pop rounded-3xl border-4 border-border bg-card p-4 text-center">
-              <span className="text-3xl">{step.emoji}</span>
-              <p className="mt-2 font-display text-sm font-extrabold leading-tight">
-                {step.lines[0]}
-                <br />
-                {step.lines[1]}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* How to Play */}
-      <section className="mb-8">
-        <h2 className="mb-4 text-center font-display text-2xl font-extrabold">How to Play</h2>
-        <div className="space-y-4">
-          <div className="shadow-pop rounded-3xl border-4 border-border bg-card p-5">
-            <h3 className="font-display text-lg font-extrabold">📦 Setup</h3>
-            <ul className="mt-2 list-disc space-y-1 pl-5 text-base font-bold text-muted-foreground">
-              <li>Each player receives 7 cards.</li>
-              <li>Turn the first card of the deck to start the discard pile.</li>
-            </ul>
-          </div>
-          <div className="shadow-pop rounded-3xl border-4 border-border bg-card p-5">
-            <h3 className="font-display text-lg font-extrabold">🔄 On your turn</h3>
-            <ul className="mt-2 list-disc space-y-1 pl-5 text-base font-bold text-muted-foreground">
-              <li>Observe the operation on the stack card.</li>
-              <li>Solve the operation.</li>
-              <li>Place the card with the correct answer on the stack.</li>
-              <li>If you don't have the answer, draw a card.</li>
-            </ul>
-          </div>
-          <div className="shadow-pop rounded-3xl border-4 border-border bg-card p-5">
-            <h3 className="font-display text-lg font-extrabold">🏆 Winning</h3>
-            <ul className="mt-2 list-disc space-y-1 pl-5 text-base font-bold text-muted-foreground">
-              <li>Continue until a player runs out of cards or all cards in the deck are gone.</li>
-              <li>The winner is the one who runs out of cards or has the most correct answers at the end.</li>
-            </ul>
-          </div>
-          <div className="shadow-pop rounded-3xl border-4 border-border bg-card p-5">
-            <h3 className="font-display text-lg font-extrabold">🎮 Game Modes</h3>
-            <p className="mt-2 text-base font-bold text-muted-foreground">
-              <span className="text-foreground">With whom:</span> Friends, siblings, parents, or school
-              colleagues. Can be played by 2 to 6 players.
-            </p>
-            <p className="mt-2 text-base font-bold text-muted-foreground">
-              <span className="text-foreground">Where:</span> At home, in the classroom, or anywhere with a flat
-              table. Can also be used as an individual educational activity.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* What's in each deck */}
-      <section className="mb-8">
-        <h2 className="mb-4 text-center font-display text-2xl font-extrabold">What's in Each Deck</h2>
-        <div className="shadow-pop overflow-hidden rounded-3xl border-4 border-border bg-card">
-          {DECK_CONTENTS.map((row) => (
-            <div key={row.label} className="flex items-center justify-between border-b-2 border-border px-5 py-3 last:border-b-0">
-              <span className="font-display text-base font-extrabold">{row.label}</span>
-              <span className="text-sm font-bold text-muted-foreground">{row.value}</span>
-            </div>
-          ))}
-          <div className="flex items-center justify-between bg-fun-yellow/40 px-5 py-3">
-            <span className="font-display text-base font-extrabold">Total per deck</span>
-            <span className="font-display text-sm font-extrabold">48 cards · 13 pages</span>
-          </div>
-        </div>
-      </section>
-
-      {/* Digital play CTA */}
-      <section className="shadow-pop mb-6 rounded-3xl bg-fun-purple p-6 text-center">
-        <h2 className="font-display text-xl font-extrabold text-primary-foreground">No printer? No problem!</h2>
+      {/* PLAY ON SCREEN CTA */}
+      <section className="shadow-pop mb-8 rounded-3xl bg-fun-blue p-6 text-center">
+        <h2 className="font-display text-2xl font-extrabold text-primary-foreground">No printer? Play right here!</h2>
         <p className="mt-1 text-sm font-bold text-primary-foreground/90">
-          Play right here on the screen with digital cards.
+          Travel the Math Road — 10 fun mini-games await!
         </p>
         <Link
           to="/play"
-          className="btn-bounce mt-4 inline-block rounded-2xl bg-card px-6 py-3 font-display text-lg font-extrabold text-fun-purple"
+          className="btn-bounce mt-4 inline-block rounded-2xl bg-card px-6 py-3 font-display text-lg font-extrabold text-fun-blue"
         >
-          🎮 Play on Screen
+          🗺️ Open Math Road
         </Link>
+      </section>
+
+      {/* HOW TO PLAY — STEP BY STEP */}
+      <section className="mb-8">
+        <h2 className="mb-4 text-center font-display text-2xl font-extrabold">How To Play — Step by Step</h2>
+        <ol className="space-y-3">
+          {STEPS.map((s, i) => (
+            <li
+              key={s.title}
+              className="shadow-pop flex items-center gap-4 rounded-3xl border-4 border-border bg-card p-4 animate-float-up"
+              style={{ animationDelay: `${i * 60}ms` }}
+            >
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-fun-yellow font-display text-xl font-extrabold text-foreground">
+                {i + 1}
+              </span>
+              <span className="text-3xl">{s.emoji}</span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-display text-lg font-extrabold">{s.title}</span>
+                <span className="text-sm font-bold text-muted-foreground">{s.desc}</span>
+              </span>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      {/* GAME RULES */}
+      <section className="mb-8">
+        <h2 className="mb-4 text-center font-display text-2xl font-extrabold">Game Rules</h2>
+        <div className="space-y-4">
+          <div className="shadow-pop rounded-3xl border-4 border-border bg-card p-5">
+            <h3 className="font-display text-lg font-extrabold">🔄 On your turn</h3>
+            <ul className="mt-2 list-disc space-y-1 pl-5 text-base font-bold text-muted-foreground">
+              <li>Look at the operation on the top card.</li>
+              <li>Solve it in your head.</li>
+              <li>Place the card with the correct answer on top.</li>
+              <li>No matching card? Draw a new one!</li>
+            </ul>
+          </div>
+          <div className="shadow-pop rounded-3xl border-4 border-border bg-card p-5">
+            <h3 className="font-display text-lg font-extrabold">🏆 How to win</h3>
+            <p className="mt-2 text-base font-bold text-muted-foreground">
+              First player to empty their hand — or with the most correct answers when the deck runs out — wins!
+            </p>
+          </div>
+          <div className="shadow-pop rounded-3xl border-4 border-border bg-card p-5">
+            <h3 className="font-display text-lg font-extrabold">👥 Who can play</h3>
+            <p className="mt-2 text-base font-bold text-muted-foreground">
+              2 to 6 players. Friends, siblings, parents or classmates. Anywhere with a flat table!
+            </p>
+          </div>
+        </div>
       </section>
 
       <BottomNav />
