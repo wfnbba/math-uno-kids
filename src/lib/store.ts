@@ -9,11 +9,14 @@ export const OP_META: Record<Operation, { label: string; symbol: string; color: 
   division: { label: "Division", symbol: "÷", color: "fun-purple", emoji: "➗" },
 };
 
+export type Gender = "boy" | "girl";
+
 export interface Profile {
   name: string;
+  gender: Gender;
   level: 1 | 2 | 3;
   topic: string;
-  theme: string; // "" | "theme-ocean" | "theme-candy" | "theme-jungle"
+  theme: string;
   createdAt: string;
 }
 
@@ -32,10 +35,16 @@ export interface DayEntry {
 
 export type DayLog = Record<string, DayEntry>;
 
+export interface RoadmapProgress {
+  currentPhase: number; // 1-based, next phase to play
+  stars: Record<number, number>; // phaseId -> best stars (0-3)
+}
+
 const PROFILE_KEY = "kmc_profile";
 const STATS_KEY = "kmc_stats";
 const DAYS_KEY = "kmc_days";
 const BADGES_KEY = "kmc_badges";
+const ROADMAP_KEY = "kmc_roadmap";
 
 const emptyStats = (): Stats => ({
   addition: { total: 0, correct: 0 },
@@ -74,6 +83,10 @@ export function applyTheme(theme: string) {
   if (theme) document.documentElement.classList.add(theme);
 }
 
+export function themeForGender(g: Gender): string {
+  return g === "boy" ? "theme-ocean" : "theme-candy";
+}
+
 export function getStats(): Stats {
   return { ...emptyStats(), ...read<Partial<Stats>>(STATS_KEY, {}) };
 }
@@ -84,6 +97,19 @@ export function getDayLog(): DayLog {
 
 export function getBadges(): string[] {
   return read<string[]>(BADGES_KEY, []);
+}
+
+export function getRoadmap(): RoadmapProgress {
+  return read<RoadmapProgress>(ROADMAP_KEY, { currentPhase: 1, stars: {} });
+}
+
+export function saveRoadmapStars(phaseId: number, stars: number) {
+  const rm = getRoadmap();
+  const prev = rm.stars[phaseId] ?? 0;
+  rm.stars[phaseId] = Math.max(prev, stars);
+  if (stars >= 1 && phaseId >= rm.currentPhase) rm.currentPhase = phaseId + 1;
+  write(ROADMAP_KEY, rm);
+  return rm;
 }
 
 function todayKey(): string {
@@ -116,7 +142,6 @@ export function getStreak(): number {
   const days = getDayLog();
   let streak = 0;
   const d = new Date();
-  // today counts if played, otherwise start from yesterday
   const fmt = (date: Date) =>
     `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
   if (!days[fmt(d)]) d.setDate(d.getDate() - 1);
@@ -144,6 +169,8 @@ export const BADGE_DEFS: BadgeDef[] = [
   { id: "hot-streak", name: "Hot Streak", emoji: "🔥", description: "Play 3 days in a row" },
   { id: "super-streak", name: "Super Streak", emoji: "🚀", description: "Play 5 days in a row" },
   { id: "storyteller", name: "Storyteller", emoji: "📚", description: "Solve a story problem" },
+  { id: "explorer", name: "Explorer", emoji: "🗺️", description: "Beat your first roadmap phase" },
+  { id: "boss-slayer", name: "Boss Slayer", emoji: "👑", description: "Defeat the final boss" },
 ];
 
 export function awardBadge(id: string): boolean {

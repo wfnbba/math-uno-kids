@@ -1,6 +1,6 @@
 @import "tailwindcss" source(none);
 @source "../src";
-@source inline("bg-fun-green bg-fun-blue bg-fun-orange bg-fun-purple bg-fun-pink bg-fun-yellow bg-fun-red text-fun-purple text-fun-blue text-fun-green border-fun-blue");
+@source inline("bg-fun-green bg-fun-blue bg-fun-orange bg-fun-purple bg-fun-pink bg-fun-yellow bg-fun-red text-fun-purple text-fun-blue text-fun-green text-fun-red border-fun-blue border-fun-green border-fun-red from-fun-red via-fun-yellow to-fun-green bg-fun-green/20 bg-fun-red/20 bg-fun-blue/30 bg-fun-green/30 bg-fun-yellow/40 bg-fun-yellow/50");
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
@@ -151,6 +151,13 @@
 @keyframes bounce-soft {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
+}
+@keyframes fall {
+  0% { transform: translateY(-20px); }
+  100% { transform: translateY(200px); }
+}
+@utility animate-fall {
+  animation: fall 4s linear forwards;
 }
 
 @utility animate-wiggle {
