@@ -2,8 +2,11 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import confetti from "canvas-confetti";
 import mascot from "@/assets/mascot.png";
-import { saveProfile, applyTheme, themeForGender, type Profile, type Gender } from "@/lib/store";
+import { saveProfile, applyTheme, themeForGender, getProfile, type Profile, type Gender } from "@/lib/store";
 import { playWin } from "@/lib/sounds";
+import { InstallButton } from "@/components/InstallButton";
+import { useInstallPrompt } from "@/hooks/use-install-prompt";
+
 
 export const Route = createFileRoute("/onboarding")({
   head: () => ({
@@ -30,15 +33,17 @@ const TOPICS = [
   { value: "superheroes", emoji: "🦸" },
 ];
 
-const STEPS = 5;
+const STEPS = 6;
 
 function Onboarding() {
   const navigate = useNavigate();
+  const existing = typeof window !== "undefined" ? getProfile() : null;
   const [step, setStep] = useState(0);
-  const [gender, setGender] = useState<Gender | null>(null);
-  const [name, setName] = useState("");
-  const [level, setLevel] = useState<1 | 2 | 3>(1);
-  const [topic, setTopic] = useState("dinosaurs");
+  const [gender, setGender] = useState<Gender | null>(existing?.gender ?? null);
+  const [name, setName] = useState(existing?.name ?? "");
+  const [level, setLevel] = useState<1 | 2 | 3>(existing?.level ?? 1);
+  const [topic, setTopic] = useState(existing?.topic ?? "dinosaurs");
+  const { canInstall } = useInstallPrompt();
 
   const pickGender = (g: Gender) => {
     setGender(g);
@@ -60,8 +65,9 @@ function Onboarding() {
     saveProfile(profile);
     playWin();
     void confetti({ particleCount: 140, spread: 90, origin: { y: 0.6 } });
-    setTimeout(() => void navigate({ to: "/" }), 900);
+    setStep(5);
   };
+
 
   return (
     <div className="mx-auto flex min-h-screen max-w-md flex-col px-6 py-8">
@@ -206,6 +212,28 @@ function Onboarding() {
           </button>
         </div>
       )}
+
+      {step === 5 && (
+        <div className="flex flex-1 flex-col justify-center text-center animate-pop-in">
+          <span className="text-6xl">📲</span>
+          <h1 className="mt-3 font-display text-3xl font-extrabold">Install the App!</h1>
+          <p className="mt-2 text-base font-bold text-muted-foreground">
+            {canInstall
+              ? "Tap below to add Kids Math Uno to your phone — play anytime, even offline!"
+              : "You can install this app from your browser menu — look for 'Add to Home Screen'."}
+          </p>
+          <div className="mt-6">
+            <InstallButton />
+          </div>
+          <button
+            onClick={() => void navigate({ to: "/" })}
+            className="btn-bounce shadow-pop mt-4 w-full rounded-3xl bg-primary px-6 py-5 font-display text-xl font-extrabold text-primary-foreground"
+          >
+            {canInstall ? "Maybe later — Enter app →" : "Enter app →"}
+          </button>
+        </div>
+      )}
     </div>
   );
+
 }
