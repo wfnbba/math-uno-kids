@@ -213,8 +213,65 @@ function Onboarding() {
         </div>
       )}
 
-      {step === 5 && <InstallStep />}
     </div>
   );
+}
 
+function InstallStep() {
+  const navigate = useNavigate();
+  const { canInstall, install } = useInstallPrompt();
+  const [status, setStatus] = useState<"idle" | "installing" | "unavailable" | "done">("idle");
+
+  const isIOS = typeof navigator !== "undefined" && /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+  const handleInstall = async () => {
+    if (canInstall) {
+      setStatus("installing");
+      await install();
+      setStatus("done");
+      setTimeout(() => void navigate({ to: "/" }), 800);
+      return;
+    }
+    setStatus("unavailable");
+  };
+
+  return (
+    <div className="flex flex-1 flex-col justify-center text-center animate-pop-in">
+      <span className="text-6xl">📲</span>
+      <h1 className="mt-3 font-display text-3xl font-extrabold">Install the App!</h1>
+      <p className="mt-2 text-base font-bold text-muted-foreground">
+        Add Kids Math Uno to your phone — play anytime, even offline!
+      </p>
+
+      <button
+        onClick={handleInstall}
+        className="btn-bounce shadow-pop mt-6 w-full rounded-3xl bg-fun-purple px-6 py-5 font-display text-xl font-extrabold text-primary-foreground"
+      >
+        {status === "installing" ? "Installing…" : status === "done" ? "Installed! 🎉" : "📲 Install App Now"}
+      </button>
+
+      {status === "unavailable" && (
+        <div className="mt-4 rounded-2xl border-4 border-border bg-card p-4 text-left text-sm font-bold text-muted-foreground">
+          {isIOS ? (
+            <>
+              On iPhone: tap the <span className="text-foreground">Share</span> button ⬆️ in Safari,
+              then choose <span className="text-foreground">"Add to Home Screen"</span>.
+            </>
+          ) : (
+            <>
+              Open your browser menu (⋮) and tap <span className="text-foreground">"Install app"</span> or
+              <span className="text-foreground"> "Add to Home Screen"</span>.
+            </>
+          )}
+        </div>
+      )}
+
+      <button
+        onClick={() => void navigate({ to: "/" })}
+        className="btn-bounce shadow-pop mt-4 w-full rounded-3xl bg-primary px-6 py-5 font-display text-xl font-extrabold text-primary-foreground"
+      >
+        Enter app →
+      </button>
+    </div>
+  );
 }
