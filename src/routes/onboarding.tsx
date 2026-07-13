@@ -4,7 +4,6 @@ import confetti from "canvas-confetti";
 import mascot from "@/assets/mascot.png";
 import { saveProfile, applyTheme, themeForGender, getProfile, type Profile, type Gender } from "@/lib/store";
 import { playWin } from "@/lib/sounds";
-import { InstallButton } from "@/components/InstallButton";
 import { useInstallPrompt } from "@/hooks/use-install-prompt";
 
 
