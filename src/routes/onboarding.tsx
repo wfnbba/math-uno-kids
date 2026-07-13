@@ -218,18 +218,27 @@ function Onboarding() {
           <span className="text-6xl">📲</span>
           <h1 className="mt-3 font-display text-3xl font-extrabold">Install the App!</h1>
           <p className="mt-2 text-base font-bold text-muted-foreground">
-            {canInstall
-              ? "Tap below to add Kids Math Uno to your phone — play anytime, even offline!"
-              : "You can install this app from your browser menu — look for 'Add to Home Screen'."}
+            Tap the button below to install Kids Math Uno on your phone — play anytime, even offline!
           </p>
-          <div className="mt-6">
-            <InstallButton />
-          </div>
+          <button
+            onClick={async () => {
+              await install();
+              void navigate({ to: "/" });
+            }}
+            className="btn-bounce shadow-pop mt-8 w-full rounded-3xl bg-fun-green px-6 py-6 font-display text-2xl font-extrabold text-primary-foreground"
+          >
+            📲 Install App Now
+          </button>
+          {!canInstall && (
+            <p className="mt-4 text-sm font-bold text-muted-foreground">
+              Not seeing the prompt? Open your browser menu and tap "Add to Home Screen".
+            </p>
+          )}
           <button
             onClick={() => void navigate({ to: "/" })}
-            className="btn-bounce shadow-pop mt-4 w-full rounded-3xl bg-primary px-6 py-5 font-display text-xl font-extrabold text-primary-foreground"
+            className="mt-4 w-full rounded-3xl px-6 py-3 font-display text-base font-bold text-muted-foreground underline"
           >
-            {canInstall ? "Maybe later — Enter app →" : "Enter app →"}
+            Skip for now →
           </button>
         </div>
       )}
