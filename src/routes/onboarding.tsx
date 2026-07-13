@@ -43,7 +43,7 @@ function Onboarding() {
   const [name, setName] = useState(existing?.name ?? "");
   const [level, setLevel] = useState<1 | 2 | 3>(existing?.level ?? 1);
   const [topic, setTopic] = useState(existing?.topic ?? "dinosaurs");
-  const { canInstall } = useInstallPrompt();
+  // install handled in InstallStep
 
   const pickGender = (g: Gender) => {
     setGender(g);
