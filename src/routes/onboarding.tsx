@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import confetti from "canvas-confetti";
 import mascot from "@/assets/mascot.png";
 import { saveProfile, applyTheme, themeForGender, getProfile, type Profile, type Gender } from "@/lib/store";
@@ -37,13 +37,21 @@ const STEPS = 6;
 
 function Onboarding() {
   const navigate = useNavigate();
-  const existing = typeof window !== "undefined" ? getProfile() : null;
   const [step, setStep] = useState(0);
-  const [gender, setGender] = useState<Gender | null>(existing?.gender ?? null);
-  const [name, setName] = useState(existing?.name ?? "");
-  const [level, setLevel] = useState<1 | 2 | 3>(existing?.level ?? 1);
-  const [topic, setTopic] = useState(existing?.topic ?? "dinosaurs");
+  const [gender, setGender] = useState<Gender | null>(null);
+  const [name, setName] = useState("");
+  const [level, setLevel] = useState<1 | 2 | 3>(1);
+  const [topic, setTopic] = useState("dinosaurs");
   const { canInstall } = useInstallPrompt();
+
+  useEffect(() => {
+    const existing = getProfile();
+    if (!existing) return;
+    setGender(existing.gender);
+    setName(existing.name);
+    setLevel(existing.level);
+    setTopic(existing.topic);
+  }, []);
 
   const pickGender = (g: Gender) => {
     setGender(g);

@@ -7,6 +7,7 @@ import { playWin } from "@/lib/sounds";
 import { BottomNav } from "@/components/BottomNav";
 import { useRequireProfile } from "@/hooks/use-require-profile";
 import { MiniGameRunner } from "@/components/MiniGames";
+import { ProfileRedirectFallback } from "@/components/ProfileRedirectFallback";
 
 export const Route = createFileRoute("/play")({
   head: () => ({
@@ -29,7 +30,7 @@ function computeStars(correct: number, total: number): number {
 }
 
 function Play() {
-  const { profile, ready } = useRequireProfile();
+  const { profile, ready, needsProfile } = useRequireProfile();
   const [rm, setRm] = useState<RoadmapProgress>({ currentPhase: 1, stars: {} });
   const [screen, setScreen] = useState<Phase_>("roadmap");
   const [phase, setPhase] = useState<Phase | null>(null);
@@ -39,13 +40,15 @@ function Play() {
     setRm(getRoadmap());
   }, []);
 
-  if (!ready || !profile) {
+  if (!ready && !needsProfile) {
     return (
       <div className="flex min-h-screen items-center justify-center font-display text-2xl font-extrabold">
         Loading... 🦊
       </div>
     );
   }
+
+  if (needsProfile || !profile) return <ProfileRedirectFallback />;
 
   const openPhase = (p: Phase) => {
     if (p.id > rm.currentPhase) return;

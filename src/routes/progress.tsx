@@ -11,6 +11,7 @@ import {
 } from "@/lib/store";
 import { BottomNav } from "@/components/BottomNav";
 import { useRequireProfile } from "@/hooks/use-require-profile";
+import { ProfileRedirectFallback } from "@/components/ProfileRedirectFallback";
 
 export const Route = createFileRoute("/progress")({
   head: () => ({
@@ -25,7 +26,7 @@ export const Route = createFileRoute("/progress")({
 const MASTERY_GOAL = 50;
 
 function Progress() {
-  const { profile, ready } = useRequireProfile();
+  const { profile, ready, needsProfile } = useRequireProfile();
   const [stats, setStats] = useState<Stats | null>(null);
   const [streak, setStreak] = useState(0);
   const [badges, setBadges] = useState<string[]>([]);
@@ -36,7 +37,9 @@ function Progress() {
     setBadges(getBadges());
   }, []);
 
-  if (!ready || !profile || !stats) {
+  if (needsProfile || !profile) return <ProfileRedirectFallback />;
+
+  if (!ready || !stats) {
     return <div className="flex min-h-screen items-center justify-center font-display text-2xl font-extrabold">Loading... 🦊</div>;
   }
 

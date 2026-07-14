@@ -5,18 +5,23 @@ import { getProfile, type Profile } from "@/lib/store";
 /** Loads the profile client-side; redirects to /onboarding when missing. */
 export function useRequireProfile() {
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [ready, setReady] = useState(false);
+  const [needsProfile, setNeedsProfile] = useState(true);
+  const [ready, setReady] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const p = getProfile();
     if (!p) {
-      void navigate({ to: "/onboarding" });
+      setProfile(null);
+      setNeedsProfile(true);
+      setReady(true);
+      void navigate({ to: "/onboarding", replace: true });
       return;
     }
     setProfile(p);
+    setNeedsProfile(false);
     setReady(true);
   }, [navigate]);
 
-  return { profile, ready };
+  return { profile, ready, needsProfile };
 }

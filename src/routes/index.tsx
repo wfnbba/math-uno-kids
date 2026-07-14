@@ -4,6 +4,7 @@ import { DECKS, downloadAll, downloadDeck } from "@/lib/decks";
 import { getProfile } from "@/lib/store";
 import { BottomNav } from "@/components/BottomNav";
 import { InstallButton } from "@/components/InstallButton";
+import { ProfileRedirectFallback } from "@/components/ProfileRedirectFallback";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -30,20 +31,32 @@ const STEPS = [
 
 function Index() {
   const [name, setName] = useState<string | null>(null);
-  const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useState(true);
+  const [needsOnboarding, setNeedsOnboarding] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const p = getProfile();
     if (!p) {
-      void navigate({ to: "/onboarding" });
+      setNeedsOnboarding(true);
+      setChecked(true);
+      void navigate({ to: "/onboarding", replace: true });
       return;
     }
     setName(p.name);
+    setNeedsOnboarding(false);
     setChecked(true);
   }, [navigate]);
 
-  if (!checked) return null;
+  if (!checked) {
+    return (
+      <div className="flex min-h-screen items-center justify-center font-display text-2xl font-extrabold text-primary">
+        Loading Kids Math Uno... 🦊
+      </div>
+    );
+  }
+
+  if (needsOnboarding) return <ProfileRedirectFallback />;
 
   return (
     <div className="mx-auto min-h-screen max-w-md px-4 pb-28 pt-6">

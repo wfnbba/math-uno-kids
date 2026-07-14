@@ -7,6 +7,7 @@ import { generateStoryProblems } from "@/lib/story.functions";
 import { playDing, playBuzz, playWin } from "@/lib/sounds";
 import { BottomNav } from "@/components/BottomNav";
 import { useRequireProfile } from "@/hooks/use-require-profile";
+import { ProfileRedirectFallback } from "@/components/ProfileRedirectFallback";
 import mascot from "@/assets/mascot.png";
 
 export const Route = createFileRoute("/story")({
@@ -26,7 +27,7 @@ interface Problem {
 }
 
 function Story() {
-  const { profile, ready } = useRequireProfile();
+  const { profile, ready, needsProfile } = useRequireProfile();
   const [op, setOp] = useState<Operation>("addition");
   const [problems, setProblems] = useState<Problem[] | null>(null);
   const [index, setIndex] = useState(0);
@@ -50,9 +51,11 @@ function Story() {
     },
   });
 
-  if (!ready || !profile) {
+  if (!ready && !needsProfile) {
     return <div className="flex min-h-screen items-center justify-center font-display text-2xl font-extrabold">Loading... 🦊</div>;
   }
+
+  if (needsProfile || !profile) return <ProfileRedirectFallback />;
 
   const current = problems?.[index];
 

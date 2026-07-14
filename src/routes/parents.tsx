@@ -13,6 +13,7 @@ import {
 } from "@/lib/store";
 import { BottomNav } from "@/components/BottomNav";
 import { useRequireProfile } from "@/hooks/use-require-profile";
+import { ProfileRedirectFallback } from "@/components/ProfileRedirectFallback";
 
 export const Route = createFileRoute("/parents")({
   head: () => ({
@@ -37,7 +38,7 @@ function lastNDaysKeys(n: number): string[] {
 }
 
 function Parents() {
-  const { profile, ready } = useRequireProfile();
+  const { profile, ready, needsProfile } = useRequireProfile();
   const [stats, setStats] = useState<Stats | null>(null);
   const [days, setDays] = useState<DayLog>({});
   const [streak, setStreak] = useState(0);
@@ -50,7 +51,9 @@ function Parents() {
     setBadgeCount(getBadges().length);
   }, []);
 
-  if (!ready || !profile || !stats) {
+  if (needsProfile || !profile) return <ProfileRedirectFallback />;
+
+  if (!ready || !stats) {
     return <div className="flex min-h-screen items-center justify-center font-display text-2xl font-extrabold">Loading...</div>;
   }
 
