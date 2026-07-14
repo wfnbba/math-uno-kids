@@ -7,7 +7,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -119,12 +119,22 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  const htmlRef = useRef<HTMLHtmlElement>(null);
+  const headRef = useRef<HTMLHeadElement>(null);
+  const bodyRef = useRef<HTMLBodyElement>(null);
+
+  useEffect(() => {
+    htmlRef.current?.removeAttribute("data-tsd-source");
+    headRef.current?.removeAttribute("data-tsd-source");
+    bodyRef.current?.removeAttribute("data-tsd-source");
+  }, []);
+
   return (
-    <html lang="en">
-      <head>
+    <html lang="en" ref={htmlRef} suppressHydrationWarning>
+      <head ref={headRef} suppressHydrationWarning>
         <HeadContent />
       </head>
-      <body>
+      <body ref={bodyRef} suppressHydrationWarning>
         {children}
         <Scripts />
       </body>
