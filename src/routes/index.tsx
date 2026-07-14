@@ -31,8 +31,8 @@ const STEPS = [
 
 function Index() {
   const [name, setName] = useState<string | null>(null);
-  const [checked, setChecked] = useState(false);
-  const [needsOnboarding, setNeedsOnboarding] = useState(false);
+  const [checked, setChecked] = useState(true);
+  const [needsOnboarding, setNeedsOnboarding] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {

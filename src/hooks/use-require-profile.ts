@@ -5,8 +5,8 @@ import { getProfile, type Profile } from "@/lib/store";
 /** Loads the profile client-side; redirects to /onboarding when missing. */
 export function useRequireProfile() {
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [needsProfile, setNeedsProfile] = useState(false);
-  const [ready, setReady] = useState(false);
+  const [needsProfile, setNeedsProfile] = useState(true);
+  const [ready, setReady] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {

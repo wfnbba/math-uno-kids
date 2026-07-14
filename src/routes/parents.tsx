@@ -51,11 +51,11 @@ function Parents() {
     setBadgeCount(getBadges().length);
   }, []);
 
+  if (needsProfile || !profile) return <ProfileRedirectFallback />;
+
   if (!ready || !stats) {
     return <div className="flex min-h-screen items-center justify-center font-display text-2xl font-extrabold">Loading...</div>;
   }
-
-  if (needsProfile || !profile) return <ProfileRedirectFallback />;
 
   // Weekly per-op aggregation
   const weekKeys = lastNDaysKeys(7);

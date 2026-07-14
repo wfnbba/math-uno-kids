@@ -51,7 +51,7 @@ function Story() {
     },
   });
 
-  if (!ready) {
+  if (!ready && !needsProfile) {
     return <div className="flex min-h-screen items-center justify-center font-display text-2xl font-extrabold">Loading... 🦊</div>;
   }
 

@@ -37,11 +37,11 @@ function Progress() {
     setBadges(getBadges());
   }, []);
 
+  if (needsProfile || !profile) return <ProfileRedirectFallback />;
+
   if (!ready || !stats) {
     return <div className="flex min-h-screen items-center justify-center font-display text-2xl font-extrabold">Loading... 🦊</div>;
   }
-
-  if (needsProfile || !profile) return <ProfileRedirectFallback />;
 
   return (
     <div className="mx-auto min-h-screen max-w-md px-4 pb-28 pt-6">
