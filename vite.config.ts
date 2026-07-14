@@ -12,4 +12,20 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  vite: {
+    plugins: [
+      {
+        name: "kids-math-uno-strip-dev-source-tags",
+        enforce: "post",
+        transform(code, id) {
+          if (!id.includes("/src/") || !/[jt]sx(?:\?|$)/.test(id)) return null;
+          if (!code.includes("data-tsd-source")) return null;
+          return {
+            code: code.replace(/\sdata-tsd-source=(?:"[^"]*"|'[^']*'|\{[^}]*\})/g, ""),
+            map: null,
+          };
+        },
+      },
+    ],
+  },
 });
