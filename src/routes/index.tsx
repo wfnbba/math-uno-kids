@@ -5,6 +5,19 @@ import { getProfile } from "@/lib/store";
 import { BottomNav } from "@/components/BottomNav";
 import { InstallButton } from "@/components/InstallButton";
 import { ProfileRedirectFallback } from "@/components/ProfileRedirectFallback";
+import fifaPdf from "@/assets/fifa-edition.pdf.asset.json";
+import fifaIntro from "@/assets/fifa-intro.png.asset.json";
+import fifaParental from "@/assets/fifa-parental.png.asset.json";
+import fifaCardBack from "@/assets/fifa-cardback.png.asset.json";
+
+function downloadFifa() {
+  const a = document.createElement("a");
+  a.href = fifaPdf.url;
+  a.download = "math-uno-fifa-world-cup-2026.pdf";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
 
 export const Route = createFileRoute("/")({
   head: () => ({
