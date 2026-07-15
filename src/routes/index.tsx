@@ -141,6 +141,44 @@ function Index() {
         ⬇️ Download All 4 Decks (192 Cards)
       </button>
 
+      <button
+        onClick={downloadAll}
+        className="btn-bounce shadow-pop mb-8 mt-4 w-full rounded-3xl bg-fun-purple px-6 py-4 font-display text-lg font-extrabold text-primary-foreground"
+      >
+        ⬇️ Download All 4 Decks (192 Cards)
+      </button>
+
+      {/* SPECIAL EDITION — FIFA WORLD CUP 2026 */}
+      <section className="shadow-pop mb-8 overflow-hidden rounded-3xl border-4 border-fun-yellow bg-gradient-to-br from-fun-green via-fun-blue to-fun-red p-4 animate-pop-in">
+        <div className="mb-3 flex items-center justify-center gap-2">
+          <span className="rounded-full bg-fun-yellow px-3 py-1 font-display text-xs font-extrabold uppercase tracking-wider text-foreground">
+            ⭐ Special Edition
+          </span>
+        </div>
+        <h2 className="text-center font-display text-2xl font-extrabold leading-tight text-primary-foreground drop-shadow-md">
+          Math UNO<br />FIFA World Cup™ 2026
+        </h2>
+        <p className="mt-2 text-center text-sm font-bold text-primary-foreground/95">
+          🏆 Limited edition — kick-off your math skills!
+        </p>
+
+        <div className="mt-4 grid grid-cols-3 gap-2 rounded-2xl bg-card/95 p-3">
+          <img src={fifaIntro.url} alt="Welcome to Math UNO FIFA World Cup 2026 Special Edition card" className="aspect-[2/3] w-full rounded-xl object-cover shadow-md" loading="lazy" />
+          <img src={fifaCardBack.url} alt="Math UNO FIFA card back design" className="aspect-[2/3] w-full rounded-xl object-cover shadow-md" loading="lazy" />
+          <img src={fifaParental.url} alt="Parental guide and instructions card" className="aspect-[2/3] w-full rounded-xl object-cover shadow-md" loading="lazy" />
+        </div>
+
+        <button
+          onClick={downloadFifa}
+          className="btn-bounce mt-4 w-full rounded-2xl bg-fun-yellow px-6 py-4 font-display text-lg font-extrabold text-foreground"
+        >
+          ⬇️ Download FIFA Edition PDF
+        </button>
+        <p className="mt-2 text-center text-xs font-bold text-primary-foreground/90">
+          High-resolution print-ready file
+        </p>
+      </section>
+
       {/* PLAY ON SCREEN CTA */}
       <section className="shadow-pop mb-8 rounded-3xl bg-fun-blue p-6 text-center">
         <h2 className="font-display text-2xl font-extrabold text-primary-foreground">No printer? Play right here!</h2>
