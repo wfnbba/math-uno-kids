@@ -91,8 +91,14 @@ function Onboarding() {
       {step === 0 && (
         <div className="flex flex-1 flex-col items-center justify-center text-center animate-pop-in">
           <img src={mascot} alt="Friendly fox mascot" width={768} height={768} className="mb-6 h-48 w-48 animate-bounce-soft" />
+          <span className="mb-3 inline-flex items-center gap-2 rounded-full bg-fun-green px-4 py-2 font-display text-sm font-extrabold text-primary-foreground shadow-pop">
+            🎉 Congratulations on your purchase!
+          </span>
           <h1 className="font-display text-4xl font-extrabold text-primary">Welcome to Kids Math Uno!</h1>
           <p className="mt-3 text-lg font-bold text-muted-foreground">
+            You're in the right place — this is your official Math UNO app.
+          </p>
+          <p className="mt-2 text-base font-bold text-muted-foreground">
             Print & play card decks, fun quizzes and a math adventure road just for you!
           </p>
           <button
