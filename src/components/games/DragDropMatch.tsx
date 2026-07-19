@@ -196,7 +196,3 @@ function shuffleArr<T>(a: T[]): T[] {
   return arr;
 }
 
-// unused placeholder to satisfy older reference
-function shuffle<T>(_: (x: T[]) => T[]): (x: T[]) => T[] {
-  return (x) => shuffleArr(x);
-}
