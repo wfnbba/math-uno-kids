@@ -12,8 +12,9 @@ interface Item {
 
 export function DragDropMatch({ level, onExit }: { level: 1 | 2 | 3; onExit: () => void }) {
   const [op, setOp] = useState<Operation>("addition");
-  const [items, setItems] = useState<Item[]>(() => build(op, level));
-  const [answers, setAnswers] = useState<number[]>(() => shuffleArr(items.map((i) => i.q.answer)));
+  const initial = useRef(build("addition", level)).current;
+  const [items, setItems] = useState<Item[]>(initial);
+  const [answers, setAnswers] = useState<number[]>(() => shuffleArr(initial.map((i) => i.q.answer)));
   const [rounds, setRounds] = useState(0);
   const [correct, setCorrect] = useState(0);
   const [wrong, setWrong] = useState(0);
