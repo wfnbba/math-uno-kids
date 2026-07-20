@@ -15,9 +15,10 @@ export function useRequireProfile() {
       setProfile(null);
       setNeedsProfile(true);
       setReady(true);
-      void navigate({ to: "/onboarding", replace: true });
+      void navigate({ to: "/parents", replace: true });
       return;
     }
+
     setProfile(p);
     setNeedsProfile(false);
     setReady(true);

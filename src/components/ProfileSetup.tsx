@@ -1,0 +1,245 @@
+import { useEffect, useState } from "react";
+import confetti from "canvas-confetti";
+import mascot from "@/assets/mascot.png";
+import { saveProfile, applyTheme, themeForGender, getProfile, type Profile, type Gender } from "@/lib/store";
+import { playWin } from "@/lib/sounds";
+import { InstallButton } from "@/components/InstallButton";
+import { useInstallPrompt } from "@/hooks/use-install-prompt";
+
+const LEVELS = [
+  { value: 1 as const, label: "Little Explorer", desc: "Ages 5-6 · numbers up to 10", emoji: "🐣" },
+  { value: 2 as const, label: "Junior Master", desc: "Ages 7-8 · numbers up to 20", emoji: "🦊" },
+  { value: 3 as const, label: "Math Hero", desc: "Ages 9-10 · big numbers!", emoji: "🦸" },
+];
+
+const TOPICS = [
+  { value: "dinosaurs", emoji: "🦖" },
+  { value: "princesses", emoji: "👑" },
+  { value: "soccer", emoji: "⚽" },
+  { value: "space", emoji: "🚀" },
+  { value: "animals", emoji: "🐶" },
+  { value: "superheroes", emoji: "🦸" },
+];
+
+interface ProfileSetupProps {
+  showWelcome?: boolean;
+  onDone?: () => void;
+  doneLabel?: string;
+}
+
+export function ProfileSetup({ showWelcome = true, onDone, doneLabel }: ProfileSetupProps) {
+  const totalSteps = showWelcome ? 6 : 5;
+  const [step, setStep] = useState(showWelcome ? 0 : 1);
+  const [gender, setGender] = useState<Gender | null>(null);
+  const [name, setName] = useState("");
+  const [level, setLevel] = useState<1 | 2 | 3>(1);
+  const [topic, setTopic] = useState("dinosaurs");
+  const { canInstall } = useInstallPrompt();
+
+  useEffect(() => {
+    const existing = getProfile();
+    if (!existing) return;
+    setGender(existing.gender);
+    setName(existing.name);
+    setLevel(existing.level);
+    setTopic(existing.topic);
+  }, []);
+
+  const pickGender = (g: Gender) => {
+    setGender(g);
+    applyTheme(themeForGender(g));
+    setTimeout(() => setStep(2), 250);
+  };
+
+  const finish = () => {
+    if (!gender) return;
+    const theme = themeForGender(gender);
+    const profile: Profile = {
+      name: name.trim() || (gender === "boy" ? "Hero" : "Star"),
+      gender,
+      level,
+      topic,
+      theme,
+      createdAt: new Date().toISOString(),
+    };
+    saveProfile(profile);
+    playWin();
+    void confetti({ particleCount: 140, spread: 90, origin: { y: 0.6 } });
+    setStep(5);
+  };
+
+  const stepIndex = showWelcome ? step : Math.max(0, step - 1);
+
+  return (
+    <div className="mx-auto flex min-h-[80vh] max-w-md flex-col px-2 py-4">
+      <div className="mb-8 flex justify-center gap-2">
+        {Array.from({ length: totalSteps }).map((_, i) => (
+          <span
+            key={i}
+            className={`h-3 rounded-full transition-all ${i === stepIndex ? "w-8 bg-primary" : "w-3 bg-border"}`}
+          />
+        ))}
+      </div>
+
+      {step === 0 && (
+        <div className="flex flex-1 flex-col items-center justify-center text-center animate-pop-in">
+          <img src={mascot} alt="Friendly fox mascot" width={768} height={768} className="mb-6 h-48 w-48 animate-bounce-soft" />
+          <span className="mb-3 inline-flex items-center gap-2 rounded-full bg-fun-green px-4 py-2 font-display text-sm font-extrabold text-primary-foreground shadow-pop">
+            🎉 Congratulations on your purchase!
+          </span>
+          <h1 className="font-display text-4xl font-extrabold text-primary">Welcome to Kids Math Uno!</h1>
+          <p className="mt-3 text-lg font-bold text-muted-foreground">
+            You're in the right place — this is your official Math UNO app.
+          </p>
+          <p className="mt-2 text-base font-bold text-muted-foreground">
+            Print & play card decks, fun quizzes and a math adventure road just for you!
+          </p>
+          <button
+            onClick={() => setStep(1)}
+            className="btn-bounce shadow-pop mt-8 w-full rounded-3xl bg-primary px-6 py-5 font-display text-xl font-extrabold text-primary-foreground"
+          >
+            Let's Go! 🚀
+          </button>
+        </div>
+      )}
+
+      {step === 1 && (
+        <div className="flex flex-1 flex-col justify-center animate-pop-in">
+          <h1 className="text-center font-display text-3xl font-extrabold">Are you a...</h1>
+          <p className="mt-1 text-center text-base font-bold text-muted-foreground">
+            We'll pick colors made just for you!
+          </p>
+          <div className="mt-8 grid grid-cols-2 gap-4">
+            <button
+              onClick={() => pickGender("boy")}
+              className={`btn-bounce shadow-pop rounded-3xl border-4 p-6 text-center ${
+                gender === "boy" ? "border-primary bg-primary/10" : "border-border bg-card"
+              }`}
+            >
+              <span className="text-6xl">👦</span>
+              <span className="mt-3 block font-display text-2xl font-extrabold">Boy</span>
+              <span className="mt-2 flex justify-center gap-1">
+                <span className="h-4 w-4 rounded-full bg-fun-blue" />
+                <span className="h-4 w-4 rounded-full bg-fun-green" />
+                <span className="h-4 w-4 rounded-full bg-fun-orange" />
+              </span>
+            </button>
+            <button
+              onClick={() => pickGender("girl")}
+              className={`btn-bounce shadow-pop rounded-3xl border-4 p-6 text-center ${
+                gender === "girl" ? "border-primary bg-primary/10" : "border-border bg-card"
+              }`}
+            >
+              <span className="text-6xl">👧</span>
+              <span className="mt-3 block font-display text-2xl font-extrabold">Girl</span>
+              <span className="mt-2 flex justify-center gap-1">
+                <span className="h-4 w-4 rounded-full bg-fun-pink" />
+                <span className="h-4 w-4 rounded-full bg-fun-purple" />
+                <span className="h-4 w-4 rounded-full bg-fun-yellow" />
+              </span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {step === 2 && (
+        <div className="flex flex-1 flex-col justify-center animate-pop-in">
+          <h1 className="text-center font-display text-3xl font-extrabold">What's your name?</h1>
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Type your name..."
+            maxLength={30}
+            className="shadow-pop mt-6 w-full rounded-3xl border-4 border-border bg-card px-6 py-5 text-center font-display text-2xl font-extrabold outline-none focus:border-primary"
+          />
+          <button
+            onClick={() => setStep(3)}
+            disabled={!name.trim()}
+            className="btn-bounce shadow-pop mt-8 w-full rounded-3xl bg-primary px-6 py-5 font-display text-xl font-extrabold text-primary-foreground disabled:opacity-40"
+          >
+            Next ➡️
+          </button>
+        </div>
+      )}
+
+      {step === 3 && (
+        <div className="flex flex-1 flex-col justify-center animate-pop-in">
+          <h1 className="text-center font-display text-3xl font-extrabold">Pick your level!</h1>
+          <div className="mt-6 space-y-3">
+            {LEVELS.map((l) => (
+              <button
+                key={l.value}
+                onClick={() => setLevel(l.value)}
+                className={`btn-bounce shadow-pop flex w-full items-center gap-4 rounded-3xl border-4 p-4 text-left ${
+                  level === l.value ? "border-primary bg-primary/10" : "border-border bg-card"
+                }`}
+              >
+                <span className="text-4xl">{l.emoji}</span>
+                <span>
+                  <span className="block font-display text-xl font-extrabold">{l.label}</span>
+                  <span className="text-sm font-bold text-muted-foreground">{l.desc}</span>
+                </span>
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={() => setStep(4)}
+            className="btn-bounce shadow-pop mt-8 w-full rounded-3xl bg-primary px-6 py-5 font-display text-xl font-extrabold text-primary-foreground"
+          >
+            Next ➡️
+          </button>
+        </div>
+      )}
+
+      {step === 4 && (
+        <div className="flex flex-1 flex-col justify-center animate-pop-in">
+          <h1 className="text-center font-display text-3xl font-extrabold">What do you love?</h1>
+          <p className="mt-1 text-center text-base font-bold text-muted-foreground">
+            We'll make math stories about it!
+          </p>
+          <div className="mt-6 grid grid-cols-2 gap-3">
+            {TOPICS.map((t) => (
+              <button
+                key={t.value}
+                onClick={() => setTopic(t.value)}
+                className={`btn-bounce shadow-pop rounded-3xl border-4 p-4 text-center ${
+                  topic === t.value ? "border-primary bg-primary/10" : "border-border bg-card"
+                }`}
+              >
+                <span className="block text-4xl">{t.emoji}</span>
+                <span className="mt-1 block font-display text-lg font-extrabold capitalize">{t.value}</span>
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={finish}
+            className="btn-bounce shadow-pop mt-8 w-full rounded-3xl bg-fun-green px-6 py-5 font-display text-xl font-extrabold text-primary-foreground"
+          >
+            All Done! 🎉
+          </button>
+        </div>
+      )}
+
+      {step === 5 && (
+        <div className="flex flex-1 flex-col justify-center text-center animate-pop-in">
+          <span className="text-6xl">📲</span>
+          <h1 className="mt-3 font-display text-3xl font-extrabold">Profile saved!</h1>
+          <p className="mt-2 text-base font-bold text-muted-foreground">
+            {canInstall
+              ? "Tap below to add Kids Math Uno to your phone — play anytime, even offline!"
+              : "You can install this app from your browser menu — look for 'Add to Home Screen'."}
+          </p>
+          <div className="mt-6">
+            <InstallButton />
+          </div>
+          <button
+            onClick={() => onDone?.()}
+            className="btn-bounce shadow-pop mt-4 w-full rounded-3xl bg-primary px-6 py-5 font-display text-xl font-extrabold text-primary-foreground"
+          >
+            {doneLabel ?? "Continue →"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}

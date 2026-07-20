@@ -7,13 +7,14 @@ import {
   getDayLog,
   getStreak,
   getBadges,
+  getProfile,
   type Stats,
   type DayLog,
   type Operation,
+  type Profile,
 } from "@/lib/store";
 import { BottomNav } from "@/components/BottomNav";
-import { useRequireProfile } from "@/hooks/use-require-profile";
-import { ProfileRedirectFallback } from "@/components/ProfileRedirectFallback";
+import { ProfileSetup } from "@/components/ProfileSetup";
 
 export const Route = createFileRoute("/parents")({
   head: () => ({
@@ -38,24 +39,59 @@ function lastNDaysKeys(n: number): string[] {
 }
 
 function Parents() {
-  const { profile, ready, needsProfile } = useRequireProfile();
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [checked, setChecked] = useState(false);
   const [stats, setStats] = useState<Stats | null>(null);
   const [days, setDays] = useState<DayLog>({});
   const [streak, setStreak] = useState(0);
   const [badgeCount, setBadgeCount] = useState(0);
+  const [editing, setEditing] = useState(false);
 
-  useEffect(() => {
+  const refresh = () => {
+    setProfile(getProfile());
     setStats(getStats());
     setDays(getDayLog());
     setStreak(getStreak());
     setBadgeCount(getBadges().length);
+    setChecked(true);
+  };
+
+  useEffect(() => {
+    refresh();
   }, []);
 
-  if (needsProfile || !profile) return <ProfileRedirectFallback />;
-
-  if (!ready || !stats) {
+  if (!checked) {
     return <div className="flex min-h-screen items-center justify-center font-display text-2xl font-extrabold">Loading...</div>;
   }
+
+  if (!profile || editing) {
+    return (
+      <div className="mx-auto min-h-screen max-w-md px-4 pb-28 pt-6">
+        <h1 className="mb-4 text-center font-display text-3xl font-extrabold text-primary">
+          {profile ? "Edit Profile ✏️" : "Set Up Kid Profile 🦊"}
+        </h1>
+        <p className="mb-4 text-center text-base font-bold text-muted-foreground">
+          {profile
+            ? "Update your child's name, level and favorite theme."
+            : "Create a profile so the app can save progress and personalize stories."}
+        </p>
+        <ProfileSetup
+          showWelcome={!profile}
+          doneLabel="Back to dashboard →"
+          onDone={() => {
+            setEditing(false);
+            refresh();
+          }}
+        />
+        <BottomNav />
+      </div>
+    );
+  }
+
+  if (!stats) {
+    return <div className="flex min-h-screen items-center justify-center font-display text-2xl font-extrabold">Loading...</div>;
+  }
+
 
   // Weekly per-op aggregation
   const weekKeys = lastNDaysKeys(7);
@@ -95,7 +131,19 @@ function Parents() {
 
   return (
     <div className="mx-auto min-h-screen max-w-md px-4 pb-28 pt-6">
-      <h1 className="mb-6 text-center font-display text-3xl font-extrabold text-primary">Parent Dashboard 📊</h1>
+      <h1 className="mb-2 text-center font-display text-3xl font-extrabold text-primary">Parent Dashboard 📊</h1>
+      <div className="mb-6 flex items-center justify-center gap-2">
+        <span className="rounded-full bg-muted px-3 py-1 text-sm font-bold text-muted-foreground">
+          Kid: <span className="font-extrabold text-foreground">{profile.name}</span>
+        </span>
+        <button
+          onClick={() => setEditing(true)}
+          className="btn-bounce rounded-full bg-primary/10 px-3 py-1 text-sm font-extrabold text-primary"
+        >
+          ✏️ Edit profile
+        </button>
+      </div>
+
 
       {/* Insight */}
       <div className="shadow-pop mb-6 rounded-3xl border-4 border-fun-blue bg-card p-5 animate-pop-in">

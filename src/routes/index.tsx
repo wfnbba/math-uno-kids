@@ -1,14 +1,14 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { DECKS, downloadAll, downloadDeck } from "@/lib/decks";
 import { getProfile } from "@/lib/store";
 import { BottomNav } from "@/components/BottomNav";
 import { InstallButton } from "@/components/InstallButton";
-import { ProfileRedirectFallback } from "@/components/ProfileRedirectFallback";
 import fifaPdf from "@/assets/fifa-edition.pdf.asset.json";
 import fifaIntro from "@/assets/fifa-intro.png.asset.json";
 import fifaParental from "@/assets/fifa-parental.png.asset.json";
 import fifaCardBack from "@/assets/fifa-cardback.png.asset.json";
+
 
 function downloadFifa() {
   const a = document.createElement("a");
@@ -44,32 +44,13 @@ const STEPS = [
 
 function Index() {
   const [name, setName] = useState<string | null>(null);
-  const [checked, setChecked] = useState(true);
-  const [needsOnboarding, setNeedsOnboarding] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const p = getProfile();
-    if (!p) {
-      setNeedsOnboarding(true);
-      setChecked(true);
-      void navigate({ to: "/onboarding", replace: true });
-      return;
-    }
-    setName(p.name);
-    setNeedsOnboarding(false);
-    setChecked(true);
-  }, [navigate]);
+    setName(p?.name ?? null);
+  }, []);
 
-  if (!checked) {
-    return (
-      <div className="flex min-h-screen items-center justify-center font-display text-2xl font-extrabold text-primary">
-        Loading Kids Math Uno... 🦊
-      </div>
-    );
-  }
 
-  if (needsOnboarding) return <ProfileRedirectFallback />;
 
   return (
     <div className="mx-auto min-h-screen max-w-md px-4 pb-28 pt-6">
@@ -93,7 +74,8 @@ function Index() {
           <p className="mt-3 font-display text-base font-bold text-primary-foreground">Hi, {name}! 👋 Ready to play?</p>
         ) : (
           <Link
-            to="/onboarding"
+            to="/parents"
+
             className="btn-bounce mt-4 inline-block rounded-2xl bg-card px-5 py-2 font-display text-sm font-extrabold text-primary"
           >
             Set up my profile →
