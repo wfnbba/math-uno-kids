@@ -44,32 +44,13 @@ const STEPS = [
 
 function Index() {
   const [name, setName] = useState<string | null>(null);
-  const [checked, setChecked] = useState(true);
-  const [needsOnboarding, setNeedsOnboarding] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const p = getProfile();
-    if (!p) {
-      setNeedsOnboarding(true);
-      setChecked(true);
-      void navigate({ to: "/onboarding", replace: true });
-      return;
-    }
-    setName(p.name);
-    setNeedsOnboarding(false);
-    setChecked(true);
-  }, [navigate]);
+    setName(p?.name ?? null);
+  }, []);
 
-  if (!checked) {
-    return (
-      <div className="flex min-h-screen items-center justify-center font-display text-2xl font-extrabold text-primary">
-        Loading Kids Math Uno... 🦊
-      </div>
-    );
-  }
 
-  if (needsOnboarding) return <ProfileRedirectFallback />;
 
   return (
     <div className="mx-auto min-h-screen max-w-md px-4 pb-28 pt-6">
