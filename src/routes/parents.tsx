@@ -131,7 +131,19 @@ function Parents() {
 
   return (
     <div className="mx-auto min-h-screen max-w-md px-4 pb-28 pt-6">
-      <h1 className="mb-6 text-center font-display text-3xl font-extrabold text-primary">Parent Dashboard 📊</h1>
+      <h1 className="mb-2 text-center font-display text-3xl font-extrabold text-primary">Parent Dashboard 📊</h1>
+      <div className="mb-6 flex items-center justify-center gap-2">
+        <span className="rounded-full bg-muted px-3 py-1 text-sm font-bold text-muted-foreground">
+          Kid: <span className="font-extrabold text-foreground">{profile.name}</span>
+        </span>
+        <button
+          onClick={() => setEditing(true)}
+          className="btn-bounce rounded-full bg-primary/10 px-3 py-1 text-sm font-extrabold text-primary"
+        >
+          ✏️ Edit profile
+        </button>
+      </div>
+
 
       {/* Insight */}
       <div className="shadow-pop mb-6 rounded-3xl border-4 border-fun-blue bg-card p-5 animate-pop-in">
