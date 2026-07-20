@@ -74,7 +74,8 @@ function Index() {
           <p className="mt-3 font-display text-base font-bold text-primary-foreground">Hi, {name}! 👋 Ready to play?</p>
         ) : (
           <Link
-            to="/onboarding"
+            to="/parents"
+
             className="btn-bounce mt-4 inline-block rounded-2xl bg-card px-5 py-2 font-display text-sm font-extrabold text-primary"
           >
             Set up my profile →
