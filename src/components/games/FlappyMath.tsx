@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { easyQuestion, type Question } from "@/lib/questions";
+import type { Question } from "@/lib/questions";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { playDing, playBuzz, playWin } from "@/lib/sounds";
 import { recordAnswer, type Operation } from "@/lib/store";
-import { GameResult, OpPicker, StoryIntro, StageBanner, Narrator, ArcProgress, useShake, celebrate } from "./GameShell";
+import { GameResult, OpPicker, StoryIntro, StageBanner, Narrator, ArcProgress, useShake, celebrate, easyQuestion } from "./GameShell";
 
 interface Gate {
   id: number;
