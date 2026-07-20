@@ -1,14 +1,14 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { DECKS, downloadAll, downloadDeck } from "@/lib/decks";
 import { getProfile } from "@/lib/store";
 import { BottomNav } from "@/components/BottomNav";
 import { InstallButton } from "@/components/InstallButton";
-import { ProfileRedirectFallback } from "@/components/ProfileRedirectFallback";
 import fifaPdf from "@/assets/fifa-edition.pdf.asset.json";
 import fifaIntro from "@/assets/fifa-intro.png.asset.json";
 import fifaParental from "@/assets/fifa-parental.png.asset.json";
 import fifaCardBack from "@/assets/fifa-cardback.png.asset.json";
+
 
 function downloadFifa() {
   const a = document.createElement("a");
