@@ -95,7 +95,7 @@ export function FlappyMath({ level: _level, onExit }: { level: 1 | 2 | 3; onExit
 
   const makeGate = (x: number): Gate => {
     const q = easyQuestion(op);
-    const wrong = q.choices.find((c) => c !== q.answer) ?? q.answer + 1;
+    const wrong = q.choices.find((c: number) => c !== q.answer) ?? q.answer + 1;
     const correctOnTop = Math.random() < 0.5;
     return {
       id: gateIdRef.current++,
