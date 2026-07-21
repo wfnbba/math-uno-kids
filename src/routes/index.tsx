@@ -1,32 +1,19 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { DECKS, downloadAll, downloadDeck } from "@/lib/decks";
+import { PRODUCTS, downloadProduct, type Product } from "@/lib/decks";
 import { getProfile } from "@/lib/store";
 import { BottomNav } from "@/components/BottomNav";
 import { InstallButton } from "@/components/InstallButton";
-import fifaPdf from "@/assets/fifa-edition.pdf.asset.json";
-import fifaIntro from "@/assets/fifa-intro.png.asset.json";
-import fifaParental from "@/assets/fifa-parental.png.asset.json";
-import fifaCardBack from "@/assets/fifa-cardback.png.asset.json";
-
-
-function downloadFifa() {
-  const a = document.createElement("a");
-  a.href = fifaPdf.url;
-  a.download = "math-uno-fifa-world-cup-2026.pdf";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-}
+import { PdfViewer } from "@/components/PdfViewer";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Kids Math Uno — 192 Printable Math Cards" },
+      { title: "Math UNO — Printable Math Card Game for Kids" },
       {
         name: "description",
         content:
-          "Kids Math Uno: your 192 printable math cards across 4 operations. Download, print, cut and play a fun UNO-style game today!",
+          "Math UNO: your printable math card game. Download the Complete Deck (192 cards) and the exclusive FIFA World Cup 2026 edition. View, print, cut, and play!",
       },
     ],
   }),
@@ -34,150 +21,122 @@ export const Route = createFileRoute("/")({
 });
 
 const STEPS = [
-  { emoji: "⬇️", title: "Download", desc: "Grab your PDF decks below." },
-  { emoji: "🖨️", title: "Print", desc: "Print on cardstock for durability." },
-  { emoji: "✂️", title: "Cut", desc: "Cut along the borders — ask a grown-up!" },
-  { emoji: "🃏", title: "Deal 7", desc: "Every player gets 7 cards." },
-  { emoji: "🧠", title: "Solve", desc: "Read the operation and find the answer." },
-  { emoji: "🎉", title: "Play & Win", desc: "First to empty their hand wins!" },
+  { emoji: "⬇️", title: "Download", desc: "Grab your Math UNO PDF." },
+  { emoji: "🖨️", title: "Print", desc: "Print on white cardstock (200–250 gsm), A4 or Letter, 100% scale — no fit-to-page." },
+  { emoji: "✂️", title: "Cut", desc: "Cut along the dashed lines with a grown-up." },
+  { emoji: "📦", title: "Fold the box", desc: "Fold the box template to store your deck." },
+  { emoji: "🃏", title: "Deal 7 cards", desc: "Shuffle. Every player starts with 7 cards." },
+  { emoji: "🎉", title: "Play & Win", desc: "First to empty their hand shouts UNO — and wins!" },
 ];
 
 function Index() {
   const [name, setName] = useState<string | null>(null);
+  const [viewing, setViewing] = useState<Product | null>(null);
 
   useEffect(() => {
     const p = getProfile();
     setName(p?.name ?? null);
   }, []);
 
-
-
   return (
-    <div className="mx-auto min-h-screen max-w-md px-4 pb-28 pt-6">
-      {/* Sticky Install Button — disappears once installed */}
+    <div className="mx-auto min-h-screen max-w-md px-4 pb-28 pt-6 text-lg">
       <div className="sticky top-2 z-40 mb-4">
         <InstallButton />
       </div>
 
       {/* HERO */}
       <section className="shadow-pop mb-6 overflow-hidden rounded-3xl border-4 border-border bg-gradient-to-br from-fun-red via-fun-yellow to-fun-green p-6 text-center animate-pop-in">
-        <p className="font-display text-sm font-extrabold uppercase tracking-widest text-primary-foreground/90">
+        <p className="font-display text-base font-extrabold uppercase tracking-widest text-primary-foreground/90">
           Kids Math UNO
         </p>
-        <h1 className="mt-1 font-display text-4xl font-extrabold leading-tight text-primary-foreground drop-shadow-md">
-          Your 192 Math Cards
+        <h1 className="mt-1 font-display text-5xl font-extrabold leading-tight text-primary-foreground drop-shadow-md">
+          Your Math UNO Decks
         </h1>
-        <p className="mt-2 font-display text-lg font-extrabold text-primary-foreground/95">
-          Download · Print · Play Today! 🎉
+        <p className="mt-3 font-display text-xl font-extrabold text-primary-foreground/95">
+          View · Print · Cut · Play 🎉
         </p>
-        {name ? (
-          <p className="mt-3 font-display text-base font-bold text-primary-foreground">Hi, {name}! 👋 Ready to play?</p>
-        ) : (
-          <Link
-            to="/parents"
-
-            className="btn-bounce mt-4 inline-block rounded-2xl bg-card px-5 py-2 font-display text-sm font-extrabold text-primary"
-          >
-            Set up my profile →
-          </Link>
+        {name && (
+          <p className="mt-3 font-display text-lg font-bold text-primary-foreground">
+            Hi, {name}! 👋 Ready to play?
+          </p>
         )}
       </section>
 
-
-      {/* DECK BOXES */}
-      <section className="mb-4">
-        <h2 className="mb-1 text-center font-display text-2xl font-extrabold">Pick Your Deck</h2>
-        <p className="mb-4 text-center text-sm font-bold text-muted-foreground">
-          Tap a box to download · 48 cards each · 13 pages
+      {/* PRODUCTS */}
+      <section className="mb-6 space-y-5">
+        <h2 className="text-center font-display text-3xl font-extrabold">Your Products</h2>
+        <p className="text-center text-base font-bold text-muted-foreground">
+          Tap <strong>View</strong> to preview inside the app, or <strong>Download</strong> to save the print-ready PDF.
         </p>
-        <div className="grid grid-cols-2 gap-3">
-          {DECKS.map((deck, i) => (
-            <button
-              key={deck.op}
-              onClick={() => downloadDeck(deck)}
-              className={`btn-bounce shadow-pop group flex flex-col items-center overflow-hidden rounded-3xl border-4 border-border ${deck.bg} p-2 text-center animate-float-up`}
-              style={{ animationDelay: `${i * 80}ms` }}
-            >
-              <img
-                src={deck.image}
-                alt={`${deck.name} card game box`}
-                loading="lazy"
-                width={1024}
-                height={1024}
-                className="h-32 w-full rounded-2xl object-contain drop-shadow-lg transition-transform group-hover:scale-105"
-              />
-              <span className="mt-2 font-display text-lg font-extrabold text-primary-foreground">{deck.name}</span>
-              <span className="text-xs font-bold text-primary-foreground/90">{deck.tagline}</span>
-              <span className="mt-1 rounded-full bg-card/95 px-3 py-1 font-display text-xs font-extrabold text-foreground">
-                ⬇️ Download PDF
-              </span>
-            </button>
-          ))}
-        </div>
+
+        {PRODUCTS.map((product, i) => (
+          <article
+            key={product.id}
+            className="shadow-pop overflow-hidden rounded-3xl border-4 border-border bg-card animate-float-up"
+            style={{ animationDelay: `${i * 80}ms` }}
+          >
+            <div className={`p-3 ${product.id === "fifa" ? "bg-gradient-to-br from-fun-blue via-fun-purple to-fun-red" : "bg-gradient-to-br from-fun-red via-fun-yellow to-fun-green"}`}>
+              <div className="grid grid-cols-2 gap-2 rounded-2xl bg-card/95 p-2">
+                <img
+                  src={product.cover}
+                  alt={`${product.name} cover`}
+                  loading="lazy"
+                  className="aspect-[3/4] w-full rounded-xl object-cover shadow-md"
+                />
+                <img
+                  src={product.sample}
+                  alt={`${product.name} sample cards`}
+                  loading="lazy"
+                  className="aspect-[3/4] w-full rounded-xl object-cover shadow-md"
+                />
+              </div>
+            </div>
+            <div className="p-5">
+              {product.id === "fifa" && (
+                <span className="mb-2 inline-block rounded-full bg-fun-yellow px-3 py-1 font-display text-xs font-extrabold uppercase tracking-wider text-foreground">
+                  ⭐ Special Edition
+                </span>
+              )}
+              <h3 className="font-display text-2xl font-extrabold leading-tight">{product.name}</h3>
+              <p className="mt-1 text-base font-bold text-muted-foreground">{product.operations}</p>
+              <p className="mt-1 text-sm font-bold text-muted-foreground">
+                {product.cards} cards · Ages 4+ · Print-ready PDF
+              </p>
+
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => setViewing(product)}
+                  className="btn-bounce rounded-2xl border-4 border-border bg-fun-blue px-4 py-4 font-display text-lg font-extrabold text-primary-foreground"
+                >
+                  👀 View
+                </button>
+                <button
+                  onClick={() => downloadProduct(product)}
+                  className="btn-bounce rounded-2xl border-4 border-border bg-fun-green px-4 py-4 font-display text-lg font-extrabold text-primary-foreground"
+                >
+                  ⬇️ Download
+                </button>
+              </div>
+            </div>
+          </article>
+        ))}
       </section>
 
-      <button
-        onClick={downloadAll}
-        className="btn-bounce shadow-pop mb-8 mt-4 w-full rounded-3xl bg-fun-purple px-6 py-4 font-display text-lg font-extrabold text-primary-foreground"
-      >
-        ⬇️ Download All 4 Decks (192 Cards)
-      </button>
-
-      <button
-        onClick={downloadAll}
-        className="btn-bounce shadow-pop mb-8 mt-4 w-full rounded-3xl bg-fun-purple px-6 py-4 font-display text-lg font-extrabold text-primary-foreground"
-      >
-        ⬇️ Download All 4 Decks (192 Cards)
-      </button>
-
-      {/* SPECIAL EDITION — FIFA WORLD CUP 2026 */}
-      <section className="shadow-pop mb-8 overflow-hidden rounded-3xl border-4 border-fun-yellow bg-gradient-to-br from-fun-green via-fun-blue to-fun-red p-4 animate-pop-in">
-        <div className="mb-3 flex items-center justify-center gap-2">
-          <span className="rounded-full bg-fun-yellow px-3 py-1 font-display text-xs font-extrabold uppercase tracking-wider text-foreground">
-            ⭐ Special Edition
-          </span>
-        </div>
-        <h2 className="text-center font-display text-2xl font-extrabold leading-tight text-primary-foreground drop-shadow-md">
-          Math UNO<br />FIFA World Cup™ 2026
-        </h2>
-        <p className="mt-2 text-center text-sm font-bold text-primary-foreground/95">
-          🏆 Limited edition — kick-off your math skills!
-        </p>
-
-        <div className="mt-4 grid grid-cols-3 gap-2 rounded-2xl bg-card/95 p-3">
-          <img src={fifaIntro.url} alt="Welcome to Math UNO FIFA World Cup 2026 Special Edition card" className="aspect-[2/3] w-full rounded-xl object-cover shadow-md" loading="lazy" />
-          <img src={fifaCardBack.url} alt="Math UNO FIFA card back design" className="aspect-[2/3] w-full rounded-xl object-cover shadow-md" loading="lazy" />
-          <img src={fifaParental.url} alt="Parental guide and instructions card" className="aspect-[2/3] w-full rounded-xl object-cover shadow-md" loading="lazy" />
-        </div>
-
-        <button
-          onClick={downloadFifa}
-          className="btn-bounce mt-4 w-full rounded-2xl bg-fun-yellow px-6 py-4 font-display text-lg font-extrabold text-foreground"
-        >
-          ⬇️ Download FIFA Edition PDF
-        </button>
-        <p className="mt-2 text-center text-xs font-bold text-primary-foreground/90">
-          High-resolution print-ready file
-        </p>
-      </section>
-
-      {/* PLAY ON SCREEN CTA */}
-      <section className="shadow-pop mb-8 rounded-3xl bg-fun-blue p-6 text-center">
-        <h2 className="font-display text-2xl font-extrabold text-primary-foreground">No printer? Play right here!</h2>
-        <p className="mt-1 text-sm font-bold text-primary-foreground/90">
-          Travel the Math Road — 10 fun mini-games await!
-        </p>
-        <Link
-          to="/play"
-          className="btn-bounce mt-4 inline-block rounded-2xl bg-card px-6 py-3 font-display text-lg font-extrabold text-fun-blue"
-        >
-          🗺️ Open Math Road
-        </Link>
+      {/* PRINT INSTRUCTIONS */}
+      <section className="shadow-pop mb-8 rounded-3xl border-4 border-border bg-fun-yellow/40 p-5">
+        <h2 className="mb-3 text-center font-display text-2xl font-extrabold">🖨️ How to Print</h2>
+        <ul className="space-y-2 text-base font-bold text-foreground">
+          <li>• Use <strong>white cardstock 200–250 gsm</strong> for durable cards.</li>
+          <li>• Paper size <strong>A4 or US Letter</strong>, printed at <strong>100% scale</strong> (turn OFF “Fit to page”).</li>
+          <li>• Print in <strong>color</strong>, double-sided is optional (single-sided works great).</li>
+          <li>• Cut carefully along the dashed lines with scissors or a paper trimmer.</li>
+          <li>• Fold the included box template to store your deck.</li>
+        </ul>
       </section>
 
       {/* HOW TO PLAY — STEP BY STEP */}
       <section className="mb-8">
-        <h2 className="mb-4 text-center font-display text-2xl font-extrabold">How To Play — Step by Step</h2>
+        <h2 className="mb-4 text-center font-display text-3xl font-extrabold">How To Play</h2>
         <ol className="space-y-3">
           {STEPS.map((s, i) => (
             <li
@@ -185,13 +144,13 @@ function Index() {
               className="shadow-pop flex items-center gap-4 rounded-3xl border-4 border-border bg-card p-4 animate-float-up"
               style={{ animationDelay: `${i * 60}ms` }}
             >
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-fun-yellow font-display text-xl font-extrabold text-foreground">
+              <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-fun-yellow font-display text-2xl font-extrabold text-foreground">
                 {i + 1}
               </span>
-              <span className="text-3xl">{s.emoji}</span>
+              <span className="text-4xl">{s.emoji}</span>
               <span className="min-w-0 flex-1">
-                <span className="block font-display text-lg font-extrabold">{s.title}</span>
-                <span className="text-sm font-bold text-muted-foreground">{s.desc}</span>
+                <span className="block font-display text-xl font-extrabold">{s.title}</span>
+                <span className="text-base font-bold text-muted-foreground">{s.desc}</span>
               </span>
             </li>
           ))}
@@ -200,33 +159,57 @@ function Index() {
 
       {/* GAME RULES */}
       <section className="mb-8">
-        <h2 className="mb-4 text-center font-display text-2xl font-extrabold">Game Rules</h2>
+        <h2 className="mb-4 text-center font-display text-3xl font-extrabold">Game Rules</h2>
         <div className="space-y-4">
           <div className="shadow-pop rounded-3xl border-4 border-border bg-card p-5">
-            <h3 className="font-display text-lg font-extrabold">🔄 On your turn</h3>
-            <ul className="mt-2 list-disc space-y-1 pl-5 text-base font-bold text-muted-foreground">
-              <li>Look at the operation on the top card.</li>
-              <li>Solve it in your head.</li>
-              <li>Place the card with the correct answer on top.</li>
-              <li>No matching card? Draw a new one!</li>
-            </ul>
-          </div>
-          <div className="shadow-pop rounded-3xl border-4 border-border bg-card p-5">
-            <h3 className="font-display text-lg font-extrabold">🏆 How to win</h3>
+            <h3 className="font-display text-xl font-extrabold">🎯 The twist</h3>
             <p className="mt-2 text-base font-bold text-muted-foreground">
-              First player to empty their hand — or with the most correct answers when the deck runs out — wins!
+              Math UNO follows the classic UNO rules — with a math twist: on your turn, <strong>match colors OR match math values</strong>.
+              Solve the equation on the top card and play a card whose <em>answer</em> matches, or any card of the same color.
             </p>
           </div>
           <div className="shadow-pop rounded-3xl border-4 border-border bg-card p-5">
-            <h3 className="font-display text-lg font-extrabold">👥 Who can play</h3>
+            <h3 className="font-display text-xl font-extrabold">🔄 On your turn</h3>
+            <ul className="mt-2 list-disc space-y-1 pl-5 text-base font-bold text-muted-foreground">
+              <li>Read the equation on the top card.</li>
+              <li>Solve it in your head.</li>
+              <li>Play a card that matches the color OR the answer.</li>
+              <li>No match? Draw one card.</li>
+              <li>Down to one card? Shout <strong>“UNO!”</strong></li>
+            </ul>
+          </div>
+          <div className="shadow-pop rounded-3xl border-4 border-border bg-card p-5">
+            <h3 className="font-display text-xl font-extrabold">🏆 How to win</h3>
             <p className="mt-2 text-base font-bold text-muted-foreground">
-              2 to 6 players. Friends, siblings, parents or classmates. Anywhere with a flat table!
+              First player to empty their hand wins the round!
+            </p>
+          </div>
+          <div className="shadow-pop rounded-3xl border-4 border-border bg-card p-5">
+            <h3 className="font-display text-xl font-extrabold">👥 Who can play</h3>
+            <p className="mt-2 text-base font-bold text-muted-foreground">
+              2 to 6 players · Ages 4+ · Friends, siblings, parents, teachers or classmates.
             </p>
           </div>
         </div>
       </section>
 
+      {/* DIGITAL PLAY (companion, not replacement) */}
+      <section className="shadow-pop mb-8 rounded-3xl border-4 border-border bg-fun-blue p-6 text-center">
+        <h2 className="font-display text-2xl font-extrabold text-primary-foreground">Practice on your device</h2>
+        <p className="mt-2 text-base font-bold text-primary-foreground/95">
+          Bonus mini-games to warm up your math skills between rounds — a fun companion to your printed deck.
+        </p>
+        <a
+          href="/play"
+          className="btn-bounce mt-4 inline-block rounded-2xl bg-card px-6 py-3 font-display text-lg font-extrabold text-fun-blue"
+        >
+          🎮 Open mini-games
+        </a>
+      </section>
+
       <BottomNav />
+
+      {viewing && <PdfViewer product={viewing} onClose={() => setViewing(null)} />}
     </div>
   );
 }
