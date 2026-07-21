@@ -20,7 +20,7 @@ export function BottomNav() {
             <Link
               key={tab.to}
               to={tab.to}
-              className={`flex flex-1 flex-col items-center gap-0.5 py-2 font-display text-xs font-bold transition-colors ${
+              className={`flex flex-1 flex-col items-center gap-0.5 px-1 py-2 text-center font-display text-[10px] font-bold leading-tight transition-colors ${
                 active ? "text-primary" : "text-muted-foreground"
               }`}
             >
