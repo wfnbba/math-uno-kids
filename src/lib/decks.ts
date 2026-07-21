@@ -1,78 +1,52 @@
-import additionAsset from "@/assets/addition.pdf.asset.json";
-import subtractionAsset from "@/assets/subtraction.pdf.asset.json";
-import multiplicationAsset from "@/assets/multiplication.pdf.asset.json";
-import divisionAsset from "@/assets/division.pdf.asset.json";
-import boxAddition from "@/assets/box-addition.jpg";
-import boxSubtraction from "@/assets/box-subtraction.jpg";
-import boxMultiplication from "@/assets/box-multiplication.jpg";
-import boxDivision from "@/assets/box-division.jpg";
-import type { Operation } from "./store";
+import completeAsset from "@/assets/math-uno-complete.pdf.asset.json";
+import fifaAsset from "@/assets/math-uno-fifa-2026-v3.pdf.asset.json";
+import deckCover from "@/assets/deck-cover.jpg.asset.json";
+import deckSample from "@/assets/deck-sample.jpg.asset.json";
+import fifaCover from "@/assets/fifa-cover.jpg.asset.json";
+import fifaSample from "@/assets/fifa-sample.jpg.asset.json";
 
-export interface Deck {
-  op: Operation;
+export interface Product {
+  id: "complete" | "fifa";
   name: string;
-  symbol: string;
+  tagline: string;
+  cards: number;
+  operations: string;
   url: string;
   filename: string;
-  bg: string;
-  image: string;
-  tagline: string;
+  cover: string;
+  sample: string;
 }
 
-export const DECKS: Deck[] = [
+export const PRODUCTS: Product[] = [
   {
-    op: "addition",
-    name: "Addition",
-    symbol: "+",
-    url: additionAsset.url,
-    filename: "math-cards-addition.pdf",
-    bg: "bg-fun-red",
-    image: boxAddition,
-    tagline: "Add it up!",
+    id: "complete",
+    name: "Math UNO — Complete Deck",
+    tagline: "192 cards · All 4 operations in one deck",
+    cards: 192,
+    operations: "Addition · Subtraction · Multiplication · Division",
+    url: completeAsset.url,
+    filename: "math-uno-complete-deck.pdf",
+    cover: deckCover.url,
+    sample: deckSample.url,
   },
   {
-    op: "subtraction",
-    name: "Subtraction",
-    symbol: "−",
-    url: subtractionAsset.url,
-    filename: "math-cards-subtraction.pdf",
-    bg: "bg-fun-blue",
-    image: boxSubtraction,
-    tagline: "Take it away!",
-  },
-  {
-    op: "multiplication",
-    name: "Multiplication",
-    symbol: "×",
-    url: multiplicationAsset.url,
-    filename: "math-cards-multiplication.pdf",
-    bg: "bg-fun-yellow",
-    image: boxMultiplication,
-    tagline: "Times to shine!",
-  },
-  {
-    op: "division",
-    name: "Division",
-    symbol: "÷",
-    url: divisionAsset.url,
-    filename: "math-cards-division.pdf",
-    bg: "bg-fun-green",
-    image: boxDivision,
-    tagline: "Share it fair!",
+    id: "fifa",
+    name: "Math UNO — FIFA World Cup 2026",
+    tagline: "96 cards · Premium exclusive edition",
+    cards: 96,
+    operations: "Addition + Subtraction · World Cup 2026 theme",
+    url: fifaAsset.url,
+    filename: "math-uno-fifa-world-cup-2026.pdf",
+    cover: fifaCover.url,
+    sample: fifaSample.url,
   },
 ];
 
-export function downloadDeck(deck: Deck) {
+export function downloadProduct(product: Product) {
   const a = document.createElement("a");
-  a.href = deck.url;
-  a.download = deck.filename;
+  a.href = product.url;
+  a.download = product.filename;
   document.body.appendChild(a);
   a.click();
   a.remove();
-}
-
-export function downloadAll() {
-  DECKS.forEach((deck, i) => {
-    setTimeout(() => downloadDeck(deck), i * 600);
-  });
 }
