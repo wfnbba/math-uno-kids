@@ -5,7 +5,7 @@ const TABS = [
   { to: "/play", emoji: "🎮", label: "Play" },
   { to: "/story", emoji: "📚", label: "Stories" },
   { to: "/progress", emoji: "⭐", label: "Progress" },
-  { to: "/parents", emoji: "📊", label: "Parents" },
+  { to: "/parents", emoji: "📊", label: "Parents & Teachers" },
 ] as const;
 
 export function BottomNav() {
