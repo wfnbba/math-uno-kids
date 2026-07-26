@@ -15,6 +15,7 @@ import {
 } from "@/lib/store";
 import { BottomNav } from "@/components/BottomNav";
 import { ProfileSetup } from "@/components/ProfileSetup";
+import { CancelSubscription } from "@/components/CancelSubscription";
 
 export const Route = createFileRoute("/parents")({
   head: () => ({
@@ -214,6 +215,10 @@ function Parents() {
           })}
         </div>
       </section>
+
+      <div className="mt-8">
+        <CancelSubscription />
+      </div>
 
       <BottomNav />
     </div>
