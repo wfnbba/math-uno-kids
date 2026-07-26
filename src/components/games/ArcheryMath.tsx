@@ -1,273 +1,245 @@
 import { useEffect, useRef, useState } from "react";
-import { generateQuestion, type Question } from "@/lib/questions";
+import type { Question } from "@/lib/questions";
 import { playDing, playBuzz, playWin } from "@/lib/sounds";
 import { recordAnswer, type Operation } from "@/lib/store";
-import { GameResult, OpPicker } from "./GameShell";
+import {
+  GameResult,
+  OpPicker,
+  StoryIntro,
+  StageBanner,
+  Narrator,
+  ArcProgress,
+  easyQuestion,
+  celebrate,
+  useShake,
+} from "./GameShell";
 
-const TARGET = 6;
+type Phase = "intro" | "banner" | "play" | "done";
+
+const ACTS = [
+  { title: "Meadow Range", emoji: "🌼", bg: "from-sky-300 to-emerald-300", drift: 0.25, tip: "Tap the balloon with the right answer!" },
+  { title: "Windy Cliffs", emoji: "🍃", bg: "from-amber-200 to-sky-400", drift: 0.55, tip: "The balloons drift — aim carefully!" },
+  { title: "Star Tower", emoji: "🌙", bg: "from-indigo-500 to-purple-700", drift: 0.85, tip: "Final round! Pop the last balloons!" },
+];
+
+const SHOTS_PER_ACT = 4;
 const W = 340;
 const H = 460;
 
 interface Balloon {
-  x: number;
-  y: number;
-  n: number;
-  isCorrect: boolean;
-  popped: boolean;
-}
-
-interface Arrow {
+  id: number;
+  value: number;
   x: number;
   y: number;
   vx: number;
-  vy: number;
+  color: string;
+  popped?: boolean;
+  wrong?: boolean;
 }
 
-export function ArcheryMath({ level, onExit }: { level: 1 | 2 | 3; onExit: () => void }) {
+const COLORS = ["bg-fun-red", "bg-fun-blue", "bg-fun-green", "bg-fun-purple"];
+
+export function ArcheryMath({ onExit }: { level?: 1 | 2 | 3; onExit: () => void }) {
   const [op, setOp] = useState<Operation>("addition");
-  const [q, setQ] = useState<Question>(() => generateQuestion(op, level));
-  const [balloons, setBalloons] = useState<Balloon[]>(() => buildBalloons(q));
+  const [phase, setPhase] = useState<Phase>("intro");
+  const [act, setAct] = useState(0);
+  const [shot, setShot] = useState(0);
   const [correct, setCorrect] = useState(0);
   const [total, setTotal] = useState(0);
-  const [done, setDone] = useState(false);
-  const [charging, setCharging] = useState(false);
-  const [power, setPower] = useState(0);
-  const [angle, setAngle] = useState(-Math.PI / 2);
-  const [arrow, setArrow] = useState<Arrow | null>(null);
-  const [flash, setFlash] = useState<"ok" | "no" | null>(null);
+  const [streak, setStreak] = useState(0);
+  const [q, setQ] = useState<Question | null>(null);
+  const [balloons, setBalloons] = useState<Balloon[]>([]);
+  const [arrow, setArrow] = useState<{ x: number; y: number } | null>(null);
+  const [locked, setLocked] = useState(false);
+  const rafRef = useRef<number | null>(null);
+  const { shakeClass, trigger } = useShake();
 
-  const chargingRef = useRef(false);
-  const powerRef = useRef(0);
-  const boxRef = useRef<HTMLDivElement | null>(null);
+  const totalShots = ACTS.length * SHOTS_PER_ACT;
 
-  const nextRound = (afterCorrect: boolean) => {
-    setTimeout(() => {
-      const newQ = generateQuestion(op, level);
-      setQ(newQ);
-      setBalloons(buildBalloons(newQ));
-      setArrow(null);
-      setFlash(null);
-      if (afterCorrect && correctRef.current + 1 >= TARGET) {
-        setDone(true);
-        playWin();
-      }
-    }, 700);
+  const nextRound = (actIndex: number) => {
+    const question = easyQuestion(op);
+    const opts = [...question.choices].slice(0, 4);
+    const bs: Balloon[] = opts.map((v, i) => ({
+      id: Date.now() + i,
+      value: v,
+      x: 40 + (i % 4) * 75,
+      y: 70 + (i % 2) * 90,
+      vx: (i % 2 === 0 ? 1 : -1) * ACTS[actIndex].drift,
+      color: COLORS[i % COLORS.length],
+    }));
+    setQ(question);
+    setBalloons(bs);
+    setArrow(null);
+    setLocked(false);
   };
 
-  const correctRef = useRef(0);
-  useEffect(() => {
-    correctRef.current = correct;
-  }, [correct]);
+  const startAct = (index: number) => {
+    setAct(index);
+    setShot(0);
+    nextRound(index);
+    setPhase("banner");
+  };
 
   const restart = () => {
-    const nq = generateQuestion(op, level);
-    setQ(nq);
-    setBalloons(buildBalloons(nq));
     setCorrect(0);
     setTotal(0);
-    setDone(false);
-    setArrow(null);
+    setStreak(0);
+    setPhase("intro");
   };
 
-  // charge loop
+  // drift animation
   useEffect(() => {
-    if (!charging) return;
-    let raf = 0;
-    const step = () => {
-      powerRef.current = Math.min(1, powerRef.current + 0.03);
-      setPower(powerRef.current);
-      raf = requestAnimationFrame(step);
+    if (phase !== "play") return;
+    const loop = () => {
+      setBalloons((bs) =>
+        bs.map((b) => {
+          let x = b.x + b.vx;
+          let vx = b.vx;
+          if (x < 24 || x > W - 64) vx = -vx;
+          x = Math.max(24, Math.min(W - 64, x));
+          return { ...b, x, vx };
+        }),
+      );
+      rafRef.current = requestAnimationFrame(loop);
     };
-    raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
-  }, [charging]);
+    rafRef.current = requestAnimationFrame(loop);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [phase]);
 
-  // arrow flight
-  useEffect(() => {
-    if (!arrow) return;
-    let raf = 0;
-    const step = () => {
-      setArrow((a) => {
-        if (!a) return a;
-        const nx = a.x + a.vx;
-        const ny = a.y + a.vy;
-        const nvy = a.vy + 0.25;
-        // check hits
-        for (const b of balloons) {
-          if (b.popped) continue;
-          const dx = nx - b.x;
-          const dy = ny - b.y;
-          if (dx * dx + dy * dy < 32 * 32) {
-            b.popped = true;
-            setBalloons([...balloons]);
-            const ok = b.isCorrect;
-            setTotal((t) => t + 1);
-            if (ok) {
-              setCorrect((c) => c + 1);
-              playDing();
-              setFlash("ok");
-              recordAnswer(op, true);
-            } else {
-              playBuzz();
-              setFlash("no");
-              recordAnswer(op, false);
-            }
-            nextRound(ok);
-            return null;
+  const shoot = (b: Balloon) => {
+    if (locked || phase !== "play" || !q) return;
+    setLocked(true);
+    setArrow({ x: b.x + 20, y: b.y + 20 });
+    const ok = b.value === q.answer;
+    setTimeout(() => {
+      setTotal((t) => t + 1);
+      if (ok) {
+        setCorrect((c) => c + 1);
+        setStreak((s) => s + 1);
+        playDing();
+        recordAnswer(op, true);
+        setBalloons((bs) => bs.map((x) => (x.id === b.id ? { ...x, popped: true } : x)));
+      } else {
+        setStreak(0);
+        playBuzz();
+        trigger();
+        recordAnswer(op, false);
+        setBalloons((bs) => bs.map((x) => (x.id === b.id ? { ...x, wrong: true } : x)));
+      }
+      setTimeout(() => {
+        const nextShot = shot + 1;
+        setShot(nextShot);
+        if (nextShot >= SHOTS_PER_ACT) {
+          if (act < ACTS.length - 1) {
+            celebrate("small");
+            startAct(act + 1);
+          } else {
+            playWin();
+            setPhase("done");
           }
+        } else {
+          nextRound(act);
         }
-        if (nx < -20 || nx > W + 20 || ny > H + 20) {
-          setTotal((t) => t + 1);
-          recordAnswer(op, false);
-          setFlash("no");
-          nextRound(false);
-          return null;
-        }
-        return { x: nx, y: ny, vx: a.vx, vy: nvy };
-      });
-      raf = requestAnimationFrame(step);
-    };
-    raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [arrow?.vx]);
-
-  const onPointerDown = (e: React.PointerEvent) => {
-    if (arrow || done) return;
-    chargingRef.current = true;
-    powerRef.current = 0;
-    setPower(0);
-    setCharging(true);
-    updateAngle(e);
-  };
-  const onPointerMove = (e: React.PointerEvent) => {
-    if (!chargingRef.current) return;
-    updateAngle(e);
-  };
-  const onPointerUp = () => {
-    if (!chargingRef.current) return;
-    chargingRef.current = false;
-    setCharging(false);
-    const p = Math.max(0.25, powerRef.current);
-    const speed = 6 + p * 12;
-    const bx = W / 2;
-    const by = H - 40;
-    setArrow({ x: bx, y: by, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed });
-    setPower(0);
-    powerRef.current = 0;
+      }, 650);
+    }, 260);
   };
 
-  const updateAngle = (e: React.PointerEvent) => {
-    const rect = boxRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    const sx = (e.clientX - rect.left) * (W / rect.width);
-    const sy = (e.clientY - rect.top) * (H / rect.height);
-    const bx = W / 2;
-    const by = H - 40;
-    let a = Math.atan2(sy - by, sx - bx);
-    // clamp to upward hemisphere
-    if (a > 0) a = a < Math.PI / 2 ? -0.05 : -Math.PI + 0.05;
-    setAngle(a);
-  };
+  if (phase === "intro") {
+    return (
+      <div className="animate-pop-in">
+        <OpPicker value={op} onChange={setOp} />
+        <StoryIntro
+          mascot="🏹"
+          title="Balloon Archer"
+          subtitle="Robin the rabbit needs you!"
+          story="Naughty balloons stole Robin's carrots! Solve each little math puzzle and pop the balloon holding the correct answer. Clear 3 ranges to win them all back!"
+          cta="Take aim 🎯"
+          onStart={() => startAct(0)}
+          bg="bg-gradient-to-br from-fun-green via-fun-blue to-fun-purple"
+        />
+      </div>
+    );
+  }
 
-  if (done) return <GameResult correct={correct} total={Math.max(total, correct)} onReplay={restart} onExit={onExit} />;
+  if (phase === "done") {
+    return (
+      <GameResult
+        correct={correct}
+        total={Math.max(total, correct)}
+        mascot="🥕"
+        storyEnd="Every balloon popped! Robin hops home with a giant basket of carrots. Thank you, archer! 🐰"
+        onReplay={restart}
+        onExit={onExit}
+      />
+    );
+  }
+
+  const stage = ACTS[act];
 
   return (
     <div className="animate-pop-in">
-      <OpPicker value={op} onChange={(o) => { setOp(o); const nq = generateQuestion(o, level); setQ(nq); setBalloons(buildBalloons(nq)); }} />
+      <Narrator mascot="🐰" text={stage.tip} />
       <div className="mb-2 flex items-center justify-between">
-        <span className="font-display text-lg font-extrabold">🎯 {correct}/{TARGET}</span>
+        <span className="font-display text-lg font-extrabold">🎯 {correct}/{totalShots}</span>
+        {streak >= 2 && (
+          <span className="animate-bounce-soft rounded-full bg-fun-orange px-3 py-1 font-display text-sm font-extrabold text-primary-foreground">
+            🔥 {streak}
+          </span>
+        )}
         <span className="rounded-full bg-fun-purple px-3 py-1 font-display text-lg font-extrabold text-primary-foreground">
-          {q.prompt} = ?
+          {q ? `${q.prompt} = ?` : "Ready!"}
         </span>
       </div>
+      <div className="mb-2">
+        <ArcProgress value={act * SHOTS_PER_ACT + shot} max={totalShots} color="bg-fun-green" />
+      </div>
       <div
-        ref={boxRef}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerLeave={onPointerUp}
-        className="shadow-pop relative overflow-hidden rounded-3xl border-4 border-border bg-gradient-to-b from-sky-300 via-sky-200 to-emerald-300 select-none"
+        className={`shadow-pop relative overflow-hidden rounded-3xl border-4 border-border bg-gradient-to-b ${stage.bg} select-none ${shakeClass}`}
         style={{ width: "100%", aspectRatio: `${W}/${H}`, touchAction: "none" }}
       >
-        <div className="absolute inset-0" style={{ width: W, height: H }}>
-          {balloons.map((b, i) => (
-            <div
-              key={i}
-              className={`absolute -translate-x-1/2 -translate-y-1/2 flex h-14 w-14 items-center justify-center rounded-full border-4 border-border font-display text-2xl font-extrabold text-primary-foreground transition-transform ${
-                b.popped ? "scale-0 opacity-0" : b.isCorrect ? "bg-fun-green" : "bg-fun-red"
+        <div className="absolute inset-0" style={{ width: W, height: H, transformOrigin: "top left" }}>
+          {/* clouds */}
+          {["☁️", "☁️", "🌤️"].map((c, i) => (
+            <span key={i} className="absolute animate-bounce-soft text-3xl opacity-80" style={{ left: 20 + i * 110, top: 16 + (i % 2) * 24 }}>
+              {c}
+            </span>
+          ))}
+          {/* balloons */}
+          {balloons.map((b) => (
+            <button
+              key={b.id}
+              onPointerDown={() => shoot(b)}
+              className={`absolute flex h-14 w-14 items-center justify-center rounded-full border-4 border-border font-display text-2xl font-extrabold text-primary-foreground transition-all duration-300 ${b.color} ${
+                b.popped ? "scale-0 opacity-0" : b.wrong ? "animate-shake opacity-60 grayscale" : "animate-bounce-soft"
               }`}
               style={{ left: b.x, top: b.y }}
+              aria-label={`Balloon ${b.value}`}
             >
-              {b.n}
-              <span className="absolute -bottom-2 text-xs">|</span>
-            </div>
+              {b.value}
+            </button>
           ))}
-          {/* aiming line */}
-          {charging && (
-            <svg className="absolute inset-0 pointer-events-none" width={W} height={H}>
-              <line
-                x1={W / 2}
-                y1={H - 40}
-                x2={W / 2 + Math.cos(angle) * 80 * (0.4 + power)}
-                y2={H - 40 + Math.sin(angle) * 80 * (0.4 + power)}
-                stroke="white"
-                strokeWidth="3"
-                strokeDasharray="4 4"
-              />
-            </svg>
-          )}
           {/* arrow */}
           {arrow && (
-            <div
-              className="absolute text-2xl"
-              style={{
-                left: arrow.x,
-                top: arrow.y,
-                transform: `translate(-50%, -50%) rotate(${Math.atan2(arrow.vy, arrow.vx)}rad)`,
-              }}
+            <span
+              className="pointer-events-none absolute text-3xl transition-all duration-200"
+              style={{ left: arrow.x, top: arrow.y }}
             >
-              ➤
-            </div>
+              🏹
+            </span>
           )}
           {/* archer */}
-          <div className="absolute bottom-1 left-1/2 -translate-x-1/2 text-4xl">🏹</div>
-          {/* power bar */}
-          {charging && (
-            <div className="absolute bottom-1 left-2 right-2 h-2 rounded-full bg-black/30">
-              <div className="h-full rounded-full bg-fun-yellow transition-all" style={{ width: `${power * 100}%` }} />
-            </div>
-          )}
-          {flash && (
-            <div className={`absolute inset-0 pointer-events-none ${flash === "ok" ? "bg-fun-green/20" : "bg-fun-red/20"}`} />
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-6xl">🐰</div>
+          <div className="absolute bottom-0 left-0 right-0 h-6 bg-emerald-600/70" />
+          {phase === "banner" && (
+            <StageBanner act={act + 1} title={stage.title} emoji={stage.emoji} onDone={() => setPhase("play")} />
           )}
         </div>
       </div>
-      <p className="mt-2 text-center text-xs font-bold text-muted-foreground">
-        Hold and drag to aim, release to shoot the correct answer!
+      <p className="mt-2 text-center text-sm font-bold text-muted-foreground">
+        Tap the balloon that shows the correct answer!
       </p>
     </div>
   );
-}
-
-function buildBalloons(q: Question): Balloon[] {
-  const positions = [
-    { x: 60, y: 70 },
-    { x: 140, y: 50 },
-    { x: 220, y: 80 },
-    { x: 290, y: 55 },
-  ];
-  const choices = [...q.choices];
-  // shuffle
-  for (let i = choices.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [choices[i], choices[j]] = [choices[j], choices[i]];
-  }
-  return choices.slice(0, 4).map((n, i) => ({
-    x: positions[i].x,
-    y: positions[i].y,
-    n,
-    isCorrect: n === q.answer,
-    popped: false,
-  }));
 }

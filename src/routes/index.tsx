@@ -20,14 +20,6 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const STEPS = [
-  { emoji: "⬇️", title: "Download", desc: "Grab your Math UNO PDF." },
-  { emoji: "🖨️", title: "Print", desc: "Print on white cardstock (200–250 gsm), A4 or Letter, 100% scale — no fit-to-page." },
-  { emoji: "✂️", title: "Cut", desc: "Cut along the dashed lines with a grown-up." },
-  { emoji: "📦", title: "Fold the box", desc: "Fold the box template to store your deck." },
-  { emoji: "🃏", title: "Deal 7 cards", desc: "Shuffle. Every player starts with 7 cards." },
-  { emoji: "🎉", title: "Play & Win", desc: "First to empty their hand shouts UNO — and wins!" },
-];
 
 function Index() {
   const [name, setName] = useState<string | null>(null);
@@ -47,13 +39,13 @@ function Index() {
       {/* HERO */}
       <section className="shadow-pop mb-6 overflow-hidden rounded-3xl border-4 border-border bg-gradient-to-br from-fun-red via-fun-yellow to-fun-green p-6 text-center animate-pop-in">
         <p className="font-display text-base font-extrabold uppercase tracking-widest text-primary-foreground/90">
-          Kids Math UNO
+          UNO Method
         </p>
-        <h1 className="mt-1 font-display text-5xl font-extrabold leading-tight text-primary-foreground drop-shadow-md">
-          Your Math UNO Decks
+        <h1 className="mt-1 font-display text-4xl font-extrabold leading-tight text-primary-foreground drop-shadow-md">
+          Welcome to UNO Method
         </h1>
         <p className="mt-3 font-display text-xl font-extrabold text-primary-foreground/95">
-          View · Print · Cut · Play 🎉
+          New stuff every week 🎁
         </p>
         {name && (
           <p className="mt-3 font-display text-lg font-bold text-primary-foreground">
@@ -64,10 +56,14 @@ function Index() {
 
       {/* PRODUCTS */}
       <section className="mb-6 space-y-5">
-        <h2 className="text-center font-display text-3xl font-extrabold">Your Products</h2>
-        <p className="text-center text-base font-bold text-muted-foreground">
-          Tap <strong>View</strong> to preview inside the app, or <strong>Download</strong> to save the print-ready PDF.
-        </p>
+        <h2 className="text-center font-display text-3xl font-extrabold">Your Math UNO Decks</h2>
+        <div className="flex flex-col items-center">
+          <p className="rounded-full border-4 border-border bg-fun-yellow px-4 py-2 text-center font-display text-base font-extrabold text-foreground">
+            👇 Download your decks right here
+          </p>
+          <span className="animate-bounce-soft text-4xl leading-none">⬇️</span>
+        </div>
+
 
         {PRODUCTS.map((product, i) => (
           <article
@@ -122,76 +118,20 @@ function Index() {
         ))}
       </section>
 
-      {/* PRINT INSTRUCTIONS */}
-      <section className="shadow-pop mb-8 rounded-3xl border-4 border-border bg-fun-yellow/40 p-5">
-        <h2 className="mb-3 text-center font-display text-2xl font-extrabold">🖨️ How to Print</h2>
-        <ul className="space-y-2 text-base font-bold text-foreground">
-          <li>• Use <strong>white cardstock 200–250 gsm</strong> for durable cards.</li>
-          <li>• Paper size <strong>A4 or US Letter</strong>, printed at <strong>100% scale</strong> (turn OFF “Fit to page”).</li>
-          <li>• Print in <strong>color</strong>, double-sided is optional (single-sided works great).</li>
-          <li>• Cut carefully along the dashed lines with scissors or a paper trimmer.</li>
-          <li>• Fold the included box template to store your deck.</li>
-        </ul>
+      {/* INSTRUCTIONS LIVE IN NEWS */}
+      <section className="shadow-pop mb-8 rounded-3xl border-4 border-border bg-fun-yellow/40 p-5 text-center">
+        <h2 className="font-display text-2xl font-extrabold">🖨️ Printing & rules</h2>
+        <p className="mt-2 text-base font-bold text-foreground">
+          Every deck has its own print guide, rules and live scoreboard inside the News tab.
+        </p>
+        <a
+          href="/news"
+          className="btn-bounce mt-4 inline-block rounded-2xl border-4 border-border bg-card px-6 py-3 font-display text-lg font-extrabold"
+        >
+          🎁 Open News
+        </a>
       </section>
 
-      {/* HOW TO PLAY — STEP BY STEP */}
-      <section className="mb-8">
-        <h2 className="mb-4 text-center font-display text-3xl font-extrabold">How To Play</h2>
-        <ol className="space-y-3">
-          {STEPS.map((s, i) => (
-            <li
-              key={s.title}
-              className="shadow-pop flex items-center gap-4 rounded-3xl border-4 border-border bg-card p-4 animate-float-up"
-              style={{ animationDelay: `${i * 60}ms` }}
-            >
-              <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-fun-yellow font-display text-2xl font-extrabold text-foreground">
-                {i + 1}
-              </span>
-              <span className="text-4xl">{s.emoji}</span>
-              <span className="min-w-0 flex-1">
-                <span className="block font-display text-xl font-extrabold">{s.title}</span>
-                <span className="text-base font-bold text-muted-foreground">{s.desc}</span>
-              </span>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      {/* GAME RULES */}
-      <section className="mb-8">
-        <h2 className="mb-4 text-center font-display text-3xl font-extrabold">Game Rules</h2>
-        <div className="space-y-4">
-          <div className="shadow-pop rounded-3xl border-4 border-border bg-card p-5">
-            <h3 className="font-display text-xl font-extrabold">🎯 The twist</h3>
-            <p className="mt-2 text-base font-bold text-muted-foreground">
-              Math UNO follows the classic UNO rules — with a math twist: on your turn, <strong>match colors OR match math values</strong>.
-              Solve the equation on the top card and play a card whose <em>answer</em> matches, or any card of the same color.
-            </p>
-          </div>
-          <div className="shadow-pop rounded-3xl border-4 border-border bg-card p-5">
-            <h3 className="font-display text-xl font-extrabold">🔄 On your turn</h3>
-            <ul className="mt-2 list-disc space-y-1 pl-5 text-base font-bold text-muted-foreground">
-              <li>Read the equation on the top card.</li>
-              <li>Solve it in your head.</li>
-              <li>Play a card that matches the color OR the answer.</li>
-              <li>No match? Draw one card.</li>
-              <li>Down to one card? Shout <strong>“UNO!”</strong></li>
-            </ul>
-          </div>
-          <div className="shadow-pop rounded-3xl border-4 border-border bg-card p-5">
-            <h3 className="font-display text-xl font-extrabold">🏆 How to win</h3>
-            <p className="mt-2 text-base font-bold text-muted-foreground">
-              First player to empty their hand wins the round!
-            </p>
-          </div>
-          <div className="shadow-pop rounded-3xl border-4 border-border bg-card p-5">
-            <h3 className="font-display text-xl font-extrabold">👥 Who can play</h3>
-            <p className="mt-2 text-base font-bold text-muted-foreground">
-              2 to 6 players · Ages 4+ · Friends, siblings, parents, teachers or classmates.
-            </p>
-          </div>
-        </div>
-      </section>
 
       {/* DIGITAL PLAY (companion, not replacement) */}
       <section className="shadow-pop mb-8 rounded-3xl border-4 border-border bg-fun-blue p-6 text-center">
