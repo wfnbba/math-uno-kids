@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { PRODUCTS, downloadProduct, type Product, type ProductId } from "@/lib/decks";
+import { useState } from "react";
+import { PRODUCTS, downloadProduct, type Product } from "@/lib/decks";
 import { BottomNav } from "@/components/BottomNav";
 import { PdfViewer } from "@/components/PdfViewer";
 import { Scoreboard } from "@/components/Scoreboard";
@@ -8,37 +8,35 @@ import { Scoreboard } from "@/components/Scoreboard";
 export const Route = createFileRoute("/news")({
   head: () => ({
     meta: [
-      { title: "Your Purchases — UNO Method" },
+      { title: "News & Decks — UNO Method" },
       {
         name: "description",
         content:
-          "Open your UNO Method purchases: Math UNO, Math UNO FIFA World Cup 2026 and the Basketball Money Game — print guides, rules and live scoreboards.",
+          "Weekly news from UNO Method: your Math UNO deck and the FIFA World Cup 2026 edition, with printing tips, rules and a live scoreboard.",
       },
-      { property: "og:title", content: "Your Purchases — UNO Method" },
+      { property: "og:title", content: "News & Decks — UNO Method" },
       {
         property: "og:description",
-        content: "All your printable games in one place, with printing tips, rules and editable scoreboards.",
+        content: "New drops every week: decks, printing guides, rules and scoreboards for your Math UNO games.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: Purchases,
+  component: News,
 });
 
 interface DeckCopy {
   accent: string;
   badge: string;
-  hero: string;
   print: string[];
   play: string[];
 }
 
-const COPY: Record<ProductId, DeckCopy> = {
+const COPY: Record<Product["id"], DeckCopy> = {
   complete: {
     accent: "fun-green",
     badge: "🃏 Core Deck",
-    hero: "192 cards · all four operations",
     print: [
       "White cardstock 200–250 gsm for durable cards.",
       "A4 or US Letter at 100% scale — turn OFF “Fit to page”.",
@@ -59,7 +57,6 @@ const COPY: Record<ProductId, DeckCopy> = {
   fifa: {
     accent: "fun-blue",
     badge: "⭐ Premium Edition",
-    hero: "96 cards · World Cup 2026 theme",
     print: [
       "White cardstock 250 gsm gives the premium feel.",
       "A4 or US Letter at 100% scale — no scaling, no fit-to-page.",
@@ -77,45 +74,10 @@ const COPY: Record<ProductId, DeckCopy> = {
       "Round winner scores the points left in every other hand.",
     ],
   },
-  basketball: {
-    accent: "fun-orange",
-    badge: "🏀 New This Week",
-    hero: "39 pages · Manage. Invest. Win.",
-    print: [
-      "White cardstock 200–250 gsm for cards, money and tokens.",
-      "Print at 100% scale — turn OFF “Fit to page” and “Shrink oversized pages”.",
-      "A4 or US Letter both work. Print in color, single-sided.",
-      "Card pages hold 9 cards each — cut along the dashed guides.",
-      "Optional: print the Card Back page as many times as you need and glue it behind each card.",
-      "Print the Budget Sheet page 6 times (or slide one into a plastic sleeve and use a dry-erase pen).",
-      "Print the box template on 250 gsm, fold the dashed lines and tape the tabs.",
-    ],
-    play: [
-      "2–4 general managers, ages 6–14. Each one starts with $100 Million.",
-      "Setup: shuffle the 4 decks, deal 8 Player cards, 4 Staff and 4 Investments to the market.",
-      "MARKET PHASE — buy players, staff and investments from the market and pay the Bank.",
-      "INCOME PHASE — Ticket Sales = $20M + $1M per Team Rating point above 60, then add your investments.",
-      "EVENT PHASE — draw 1 Event card and do what it says (good news, bad news or a math challenge).",
-      "EXPENSE PHASE — pay player salaries, staff salaries, $5M arena costs and marketing.",
-      "PROFIT PHASE — Total Income − Total Expenses = Profit. Write it on your Budget Sheet.",
-      "CHAMPIONSHIP PHASE — add Championship Points; the highest total wins the season and 1 Ring token.",
-      "After the last season: $5M cash = 1 point, each Ring = +10, each Investment = +3, Team Rating 75+ = +8.",
-      "Highest final score is the Champion Owner — fill in the certificate!",
-    ],
-  },
 };
 
-function Purchases() {
-  const [openId, setOpenId] = useState<ProductId | null>(null);
+function News() {
   const [viewing, setViewing] = useState<Product | null>(null);
-  const open = PRODUCTS.find((p) => p.id === openId) ?? null;
-
-  useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [open]);
 
   return (
     <div className="mx-auto min-h-screen max-w-5xl px-4 pb-28 pt-6">
@@ -124,109 +86,72 @@ function Purchases() {
           UNO Method
         </p>
         <h1 className="mt-1 font-display text-4xl font-extrabold text-primary-foreground drop-shadow-md">
-          Your Purchases 🎁
+          News 🎁
         </h1>
         <p className="mt-2 font-display text-lg font-bold text-primary-foreground/95">
-          Tap a game to open it — new drops every single week.
+          New drops every single week — decks, rules and game tools.
         </p>
       </header>
 
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+      <div className="grid grid-cols-2 gap-4">
         {PRODUCTS.map((product) => {
           const copy = COPY[product.id];
           return (
-            <button
+            <article
               key={product.id}
-              onClick={() => setOpenId(product.id)}
-              className="shadow-pop group relative overflow-hidden rounded-3xl border-4 border-border bg-card text-left transition-transform duration-200 hover:-translate-y-1 active:scale-95 animate-float-up"
+              className="shadow-pop flex flex-col overflow-hidden rounded-3xl border-4 border-border bg-card animate-float-up"
             >
-              <img
-                src={product.cover}
-                alt={`${product.name} cover`}
-                loading="lazy"
-                className="aspect-[3/4] w-full object-cover transition-transform duration-300 group-hover:scale-105"
-              />
-              <span
-                className={`absolute left-2 top-2 rounded-full bg-${copy.accent} px-3 py-1 font-display text-xs font-extrabold uppercase tracking-wider text-primary-foreground`}
-              >
-                {copy.badge}
-              </span>
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/60 to-transparent p-3 pt-10">
-                <h2 className="font-display text-base font-extrabold leading-tight text-white">{product.name}</h2>
-                <p className="mt-0.5 text-xs font-bold text-white/80">{copy.hero}</p>
-                <span className="mt-2 inline-block rounded-full bg-white/95 px-3 py-1 font-display text-xs font-extrabold text-foreground">
-                  ▶ Open
-                </span>
-              </div>
-            </button>
-          );
-        })}
-      </div>
-
-      {open && (
-        <div className="fixed inset-0 z-[55] overflow-y-auto bg-black/70 backdrop-blur-sm animate-pop-in">
-          <div className="mx-auto min-h-full max-w-3xl px-3 py-6">
-            <div className="shadow-pop overflow-hidden rounded-3xl border-4 border-border bg-card">
-              <div className={`relative bg-${COPY[open.id].accent} p-3`}>
-                <button
-                  onClick={() => setOpenId(null)}
-                  aria-label="Close"
-                  className="btn-bounce absolute right-3 top-3 z-10 rounded-2xl bg-fun-red px-3 py-2 font-display text-sm font-extrabold text-primary-foreground"
-                >
-                  ✕
-                </button>
+              <div className={`bg-${copy.accent} p-3`}>
                 <div className="grid grid-cols-2 gap-2 rounded-2xl bg-card/95 p-2">
                   <img
-                    src={open.cover}
-                    alt={`${open.name} cover`}
+                    src={product.cover}
+                    alt={`${product.name} cover`}
+                    loading="lazy"
                     className="aspect-[3/4] w-full rounded-xl object-cover shadow-md"
                   />
                   <img
-                    src={open.sample}
-                    alt={`${open.name} sample pages`}
+                    src={product.sample}
+                    alt={`${product.name} sample cards`}
+                    loading="lazy"
                     className="aspect-[3/4] w-full rounded-xl object-cover shadow-md"
                   />
                 </div>
               </div>
 
-              <div className="p-4">
-                <h2 className="font-display text-2xl font-extrabold leading-tight">{open.name}</h2>
-                <p className="mt-1 text-sm font-bold text-muted-foreground">{open.operations}</p>
-                <p className="text-sm font-bold text-muted-foreground">{open.tagline}</p>
+              <div className="flex flex-1 flex-col p-4">
+                <span className={`mb-2 inline-block w-fit rounded-full bg-${copy.accent} px-3 py-1 font-display text-xs font-extrabold uppercase tracking-wider text-primary-foreground`}>
+                  {copy.badge}
+                </span>
+                <h2 className="font-display text-xl font-extrabold leading-tight">{product.name}</h2>
+                <p className="mt-1 text-sm font-bold text-muted-foreground">{product.operations}</p>
+                <p className="text-sm font-bold text-muted-foreground">{product.cards} cards · Print-ready PDF</p>
 
                 <div className="mt-3 grid grid-cols-2 gap-2">
                   <button
-                    onClick={() => setViewing(open)}
+                    onClick={() => setViewing(product)}
                     className="btn-bounce rounded-2xl border-4 border-border bg-fun-blue px-2 py-3 font-display text-base font-extrabold text-primary-foreground"
                   >
                     👀 View
                   </button>
                   <button
-                    onClick={() => downloadProduct(open)}
+                    onClick={() => downloadProduct(product)}
                     className="btn-bounce rounded-2xl border-4 border-border bg-fun-green px-2 py-3 font-display text-base font-extrabold text-primary-foreground"
                   >
                     ⬇️ Get it
                   </button>
                 </div>
 
-                <Section title="🖨️ How to print" items={COPY[open.id].print} />
-                <Section title="🎮 How to play" items={COPY[open.id].play} defaultOpen />
+                <Section title="🖨️ How to print" items={copy.print} />
+                <Section title="🎮 How to play" items={copy.play} defaultOpen />
 
                 <div className="mt-3">
-                  <Scoreboard deckId={open.id} accent={COPY[open.id].accent} />
+                  <Scoreboard deckId={product.id} accent={copy.accent} />
                 </div>
-
-                <button
-                  onClick={() => setOpenId(null)}
-                  className="btn-bounce mt-4 w-full rounded-2xl border-4 border-border bg-card px-4 py-3 font-display text-base font-extrabold"
-                >
-                  ← Back to my games
-                </button>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
+            </article>
+          );
+        })}
+      </div>
 
       <BottomNav />
       {viewing && <PdfViewer product={viewing} onClose={() => setViewing(null)} />}

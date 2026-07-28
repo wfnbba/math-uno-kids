@@ -122,13 +122,13 @@ function Index() {
       <section className="shadow-pop mb-8 rounded-3xl border-4 border-border bg-fun-yellow/40 p-5 text-center">
         <h2 className="font-display text-2xl font-extrabold">🖨️ Printing & rules</h2>
         <p className="mt-2 text-base font-bold text-foreground">
-          Every game has its own print guide, rules and live scoreboard inside the Your Purchases tab.
+          Every deck has its own print guide, rules and live scoreboard inside the News tab.
         </p>
         <a
           href="/news"
           className="btn-bounce mt-4 inline-block rounded-2xl border-4 border-border bg-card px-6 py-3 font-display text-lg font-extrabold"
         >
-          🎁 Open Your Purchases
+          🎁 Open News
         </a>
       </section>
 
