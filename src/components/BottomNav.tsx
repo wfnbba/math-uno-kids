@@ -3,7 +3,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 const TABS = [
   { to: "/", emoji: "🏠", label: "Home" },
   { to: "/play", emoji: "🎮", label: "Play" },
-  { to: "/news", emoji: "🎁", label: "News" },
+  { to: "/news", emoji: "🎁", label: "Your Purchases" },
   { to: "/progress", emoji: "⭐", label: "Progress" },
   { to: "/parents", emoji: "📊", label: "Parents & Teachers" },
 ] as const;
