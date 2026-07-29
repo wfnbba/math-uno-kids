@@ -12,7 +12,9 @@ import {
   easyQuestion,
   celebrate,
   useShake,
+  GameStage,
 } from "./GameShell";
+
 
 type Phase = "intro" | "banner" | "play" | "done";
 
