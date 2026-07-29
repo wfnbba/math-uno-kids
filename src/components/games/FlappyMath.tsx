@@ -3,7 +3,7 @@ import type { Question } from "@/lib/questions";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { playDing, playBuzz, playWin } from "@/lib/sounds";
 import { recordAnswer, type Operation } from "@/lib/store";
-import { GameResult, OpPicker, StoryIntro, StageBanner, Narrator, ArcProgress, useShake, celebrate, easyQuestion } from "./GameShell";
+import { GameResult, OpPicker, StoryIntro, StageBanner, Narrator, ArcProgress, useShake, celebrate, easyQuestion, GameStage } from "./GameShell";
 
 interface Gate {
   id: number;
