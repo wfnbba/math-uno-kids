@@ -78,7 +78,8 @@ export function PdfViewer({ product, onClose }: Props) {
           if (n === 1) setLoading(false);
         }
         setLoading(false);
-      } catch {
+      } catch (err) {
+        console.error("pdf render failed", err);
         if (!cancelled) {
           setFailed(true);
           setLoading(false);
