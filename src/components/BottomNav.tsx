@@ -5,7 +5,7 @@ const TABS = [
   { to: "/play", emoji: "🎮", label: "Play" },
   { to: "/news", emoji: "🎁", label: "News" },
   { to: "/progress", emoji: "⭐", label: "Progress" },
-  { to: "/parents", emoji: "📊", label: "Parents & Teachers" },
+  { to: "/parents", emoji: "📊", label: "Parents &\nTeachers" },
 ] as const;
 
 export function BottomNav() {
@@ -13,14 +13,14 @@ export function BottomNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 border-t-4 border-border bg-card pb-[env(safe-area-inset-bottom)]">
-      <div className="mx-auto flex max-w-md items-stretch justify-around">
+      <div className="mx-auto flex max-w-md items-stretch justify-around px-1">
         {TABS.map((tab) => {
           const active = tab.to === "/" ? pathname === "/" : pathname.startsWith(tab.to);
           return (
             <Link
               key={tab.to}
               to={tab.to}
-              className={`flex flex-1 flex-col items-center gap-0.5 px-1 py-2 text-center font-display text-[10px] font-bold leading-tight transition-colors ${
+              className={`flex flex-1 flex-col items-center gap-0.5 px-0.5 py-2 text-center font-display text-[11px] font-bold leading-[1.1] whitespace-pre-line min-h-16 transition-colors ${
                 active ? "text-primary" : "text-muted-foreground"
               }`}
             >
