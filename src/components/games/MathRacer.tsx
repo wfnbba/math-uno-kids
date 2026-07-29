@@ -12,7 +12,9 @@ import {
   easyQuestion,
   celebrate,
   useShake,
+  GameStage,
 } from "./GameShell";
+
 
 const H = 460;
 const GATES_PER_ACT = 4;
