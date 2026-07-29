@@ -240,12 +240,15 @@ export function FlappyMath({ level: _level, onExit }: { level: 1 | 2 | 3; onExit
       <div className="mb-2">
         <ArcProgress value={correct} max={PER_ACT * 3} />
       </div>
-      <div
+      <GameStage
+        w={W}
+        h={H}
         onPointerDown={flap}
-        className={`shadow-pop relative overflow-hidden rounded-3xl border-4 border-border select-none ${shakeClass}`}
-        style={{ width: "100%", aspectRatio: `${W}/${H}`, touchAction: "none", background: actInfo.bg }}
+        className={`shadow-pop rounded-3xl border-4 border-border ${shakeClass}`}
+        style={{ background: actInfo.bg }}
       >
-        <div className="absolute inset-0" style={{ width: W, height: H, transform: "scale(1)", transformOrigin: "top left" }}>
+        <div className="absolute inset-0">
+
           {/* parallax decorations */}
           {[0, 1, 2, 3].map((i) => (
             <div
