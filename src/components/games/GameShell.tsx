@@ -291,3 +291,50 @@ export function useGameState() {
   };
   return { correct, total, done, setCorrect, setTotal, setDone, reset };
 }
+
+/** Responsive stage: keeps a fixed logical WxH game world but scales it to the
+ *  available width so every phone shows the whole board. */
+export function GameStage({
+  w,
+  h,
+  className = "",
+  style,
+  onPointerDown,
+  children,
+}: {
+  w: number;
+  h: number;
+  className?: string;
+  style?: React.CSSProperties;
+  onPointerDown?: (e: React.PointerEvent) => void;
+  children: React.ReactNode;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const update = () => setScale(el.clientWidth / w);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [w]);
+
+  return (
+    <div
+      ref={ref}
+      onPointerDown={onPointerDown}
+      className={`relative overflow-hidden select-none ${className}`}
+      style={{ width: "100%", aspectRatio: `${w}/${h}`, touchAction: "none", ...style }}
+    >
+      <div
+        className="absolute left-0 top-0"
+        style={{ width: w, height: h, transform: `scale(${scale})`, transformOrigin: "top left" }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}

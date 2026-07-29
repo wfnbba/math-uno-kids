@@ -80,28 +80,29 @@ function News() {
   const [viewing, setViewing] = useState<Product | null>(null);
 
   return (
-    <div className="mx-auto min-h-screen max-w-5xl px-4 pb-28 pt-6">
-      <header className="shadow-pop mb-6 rounded-3xl border-4 border-border bg-gradient-to-br from-fun-purple via-fun-blue to-fun-green p-6 text-center animate-pop-in">
-        <p className="font-display text-base font-extrabold uppercase tracking-widest text-primary-foreground/90">
+    <div className="mx-auto min-h-screen max-w-md px-4 pb-28 pt-6 md:max-w-5xl">
+      <header className="shadow-pop mb-6 rounded-3xl border-4 border-border bg-gradient-to-br from-fun-purple via-fun-blue to-fun-green p-5 text-center animate-pop-in">
+        <p className="font-display text-sm font-extrabold uppercase tracking-widest text-primary-foreground/90">
           UNO Method
         </p>
-        <h1 className="mt-1 font-display text-4xl font-extrabold text-primary-foreground drop-shadow-md">
+        <h1 className="mt-1 font-display text-3xl font-extrabold text-primary-foreground drop-shadow-md sm:text-4xl">
           News 🎁
         </h1>
-        <p className="mt-2 font-display text-lg font-bold text-primary-foreground/95">
+        <p className="mt-2 font-display text-base font-bold text-primary-foreground/95">
           New drops every single week — decks, rules and game tools.
         </p>
       </header>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         {PRODUCTS.map((product) => {
           const copy = COPY[product.id];
+          const accentBg = copy.accent === "fun-green" ? "bg-fun-green" : "bg-fun-blue";
           return (
             <article
               key={product.id}
               className="shadow-pop flex flex-col overflow-hidden rounded-3xl border-4 border-border bg-card animate-float-up"
             >
-              <div className={`bg-${copy.accent} p-3`}>
+              <div className={`${accentBg} p-3`}>
                 <div className="grid grid-cols-2 gap-2 rounded-2xl bg-card/95 p-2">
                   <img
                     src={product.cover}
@@ -119,23 +120,23 @@ function News() {
               </div>
 
               <div className="flex flex-1 flex-col p-4">
-                <span className={`mb-2 inline-block w-fit rounded-full bg-${copy.accent} px-3 py-1 font-display text-xs font-extrabold uppercase tracking-wider text-primary-foreground`}>
+                <span className={`mb-2 inline-block w-fit rounded-full ${accentBg} px-3 py-1 font-display text-xs font-extrabold uppercase tracking-wider text-primary-foreground`}>
                   {copy.badge}
                 </span>
-                <h2 className="font-display text-xl font-extrabold leading-tight">{product.name}</h2>
-                <p className="mt-1 text-sm font-bold text-muted-foreground">{product.operations}</p>
+                <h2 className="font-display text-2xl font-extrabold leading-tight">{product.name}</h2>
+                <p className="mt-1 text-base font-bold text-muted-foreground">{product.operations}</p>
                 <p className="text-sm font-bold text-muted-foreground">{product.cards} cards · Print-ready PDF</p>
 
-                <div className="mt-3 grid grid-cols-2 gap-2">
+                <div className="mt-4 grid grid-cols-2 gap-3">
                   <button
                     onClick={() => setViewing(product)}
-                    className="btn-bounce rounded-2xl border-4 border-border bg-fun-blue px-2 py-3 font-display text-base font-extrabold text-primary-foreground"
+                    className="btn-bounce min-h-14 rounded-2xl border-4 border-border bg-fun-blue px-2 py-3 font-display text-lg font-extrabold text-primary-foreground"
                   >
                     👀 View
                   </button>
                   <button
                     onClick={() => downloadProduct(product)}
-                    className="btn-bounce rounded-2xl border-4 border-border bg-fun-green px-2 py-3 font-display text-base font-extrabold text-primary-foreground"
+                    className="btn-bounce min-h-14 rounded-2xl border-4 border-border bg-fun-green px-2 py-3 font-display text-lg font-extrabold text-primary-foreground"
                   >
                     ⬇️ Get it
                   </button>
@@ -152,6 +153,7 @@ function News() {
           );
         })}
       </div>
+
 
       <BottomNav />
       {viewing && <PdfViewer product={viewing} onClose={() => setViewing(null)} />}

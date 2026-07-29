@@ -12,7 +12,9 @@ import {
   easyQuestion,
   celebrate,
   useShake,
+  GameStage,
 } from "./GameShell";
+
 
 const H = 460;
 const GATES_PER_ACT = 4;
@@ -219,11 +221,13 @@ export function MathRacer({ onExit }: { level?: 1 | 2 | 3; onExit: () => void })
       <div className="mb-2">
         <ArcProgress value={cleared} max={totalGates} color="bg-fun-orange" />
       </div>
-      <div
-        className={`shadow-pop relative overflow-hidden rounded-3xl border-4 border-border bg-gradient-to-b ${stage.road} select-none ${shakeClass}`}
-        style={{ width: "100%", aspectRatio: `340/${H}`, touchAction: "none" }}
+      <GameStage
+        w={340}
+        h={H}
+        className={`shadow-pop rounded-3xl border-4 border-border bg-gradient-to-b ${stage.road} ${shakeClass}`}
       >
-        <div className="absolute inset-0" style={{ height: H }}>
+        <div className="absolute inset-0">
+
           <div className="absolute inset-0 flex">
             {[0, 1, 2].map((l) => (
               <div key={l} className="flex-1 border-x-2 border-dashed border-yellow-300/60" />
@@ -281,7 +285,8 @@ export function MathRacer({ onExit }: { level?: 1 | 2 | 3; onExit: () => void })
             <StageBanner act={act + 1} title={stage.title} emoji={stage.emoji} onDone={() => setPhase("race")} />
           )}
         </div>
-      </div>
+      </GameStage>
+
       <p className="mt-2 text-center text-sm font-bold text-muted-foreground">
         Tap a lane (or use ← →) to drive into the correct answer!
       </p>
