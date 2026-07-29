@@ -47,8 +47,8 @@ export function PdfViewer({ product, onClose }: Props) {
       setLoading(true);
       setFailed(false);
       try {
-        const pdfjs = await import("pdfjs-dist");
-        const workerUrl = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url")).default;
+        const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+        const workerUrl = (await import("pdfjs-dist/legacy/build/pdf.worker.min.mjs?url")).default;
         pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
 
         const doc = await pdfjs.getDocument({ url: product.url }).promise;
@@ -79,7 +79,7 @@ export function PdfViewer({ product, onClose }: Props) {
           canvas.height = Math.floor(viewport.height);
           const ctx = canvas.getContext("2d");
           if (!ctx) return;
-          await page.render({ canvas, canvasContext: ctx, viewport }).promise;
+          await page.render({ canvasContext: ctx, viewport }).promise;
         };
 
         observer = new IntersectionObserver(
