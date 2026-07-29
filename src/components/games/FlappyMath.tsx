@@ -312,7 +312,8 @@ export function FlappyMath({ level: _level, onExit }: { level: 1 | 2 | 3; onExit
         {phase === "banner" && (
           <StageBanner act={act + 1} title={actInfo.title} emoji={actInfo.emoji} onDone={startPlaying} />
         )}
-      </div>
+      </GameStage>
+
       <p className="mt-2 text-center text-xs font-bold text-muted-foreground">
         Tap the screen (or press Space) to flap. Fly through the correct answer!
       </p>
