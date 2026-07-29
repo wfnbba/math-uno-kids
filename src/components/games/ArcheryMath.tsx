@@ -238,7 +238,8 @@ export function ArcheryMath({ onExit }: { level?: 1 | 2 | 3; onExit: () => void 
             <StageBanner act={act + 1} title={stage.title} emoji={stage.emoji} onDone={() => setPhase("play")} />
           )}
         </div>
-      </div>
+      </GameStage>
+
       <p className="mt-2 text-center text-sm font-bold text-muted-foreground">
         Tap the balloon that shows the correct answer!
       </p>
