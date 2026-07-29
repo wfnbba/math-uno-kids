@@ -195,11 +195,13 @@ export function ArcheryMath({ onExit }: { level?: 1 | 2 | 3; onExit: () => void 
       <div className="mb-2">
         <ArcProgress value={act * SHOTS_PER_ACT + shot} max={totalShots} color="bg-fun-green" />
       </div>
-      <div
-        className={`shadow-pop relative overflow-hidden rounded-3xl border-4 border-border bg-gradient-to-b ${stage.bg} select-none ${shakeClass}`}
-        style={{ width: "100%", aspectRatio: `${W}/${H}`, touchAction: "none" }}
+      <GameStage
+        w={W}
+        h={H}
+        className={`shadow-pop rounded-3xl border-4 border-border bg-gradient-to-b ${stage.bg} ${shakeClass}`}
       >
-        <div className="absolute inset-0" style={{ width: W, height: H, transformOrigin: "top left" }}>
+        <div className="absolute inset-0">
+
           {/* clouds */}
           {["☁️", "☁️", "🌤️"].map((c, i) => (
             <span key={i} className="absolute animate-bounce-soft text-3xl opacity-80" style={{ left: 20 + i * 110, top: 16 + (i % 2) * 24 }}>
