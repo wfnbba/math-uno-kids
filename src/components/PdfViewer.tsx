@@ -30,11 +30,18 @@ export function PdfViewer({ product, onClose }: Props) {
     };
   }, [onClose]);
 
-  // Render the PDF to canvases (works reliably on mobile browsers, unlike <iframe>)
+  /**
+   * Canvas rendering (mobile browsers handle <iframe> PDFs badly).
+   * Pages are laid out immediately as sized placeholders and rendered
+   * lazily as they scroll into view, so a 99-page deck opens instantly.
+   */
   useEffect(() => {
     let cancelled = false;
     const host = pagesRef.current;
-    if (!host) return;
+    const scroller = scrollRef.current;
+    if (!host || !scroller) return;
+
+    let observer: IntersectionObserver | null = null;
 
     (async () => {
       setLoading(true);
@@ -48,38 +55,61 @@ export function PdfViewer({ product, onClose }: Props) {
         if (cancelled) return;
         setPageCount(doc.numPages);
 
-        host.innerHTML = "";
         const zoom = ZOOMS[zoomIdx];
-        const containerWidth = (scrollRef.current?.clientWidth ?? 360) - 16;
+        const cssWidth = Math.max(240, (scroller.clientWidth || 360) - 16) * zoom;
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-        for (let n = 1; n <= doc.numPages; n++) {
-          if (cancelled) return;
-          const page = await doc.getPage(n);
-          const base = page.getViewport({ scale: 1 });
-          const scale = ((containerWidth * zoom) / base.width) * dpr;
-          const viewport = page.getViewport({ scale });
+        // Use page 1 to estimate the placeholder height for every page.
+        const first = await doc.getPage(1);
+        if (cancelled) return;
+        const base = first.getViewport({ scale: 1 });
+        const ratio = base.height / base.width;
 
-          const canvas = document.createElement("canvas");
+        host.innerHTML = "";
+        const rendered = new Set<number>();
+
+        const renderPage = async (n: number, canvas: HTMLCanvasElement) => {
+          if (rendered.has(n) || cancelled) return;
+          rendered.add(n);
+          const page = n === 1 ? first : await doc.getPage(n);
+          if (cancelled) return;
+          const scale = (cssWidth / base.width) * dpr;
+          const viewport = page.getViewport({ scale });
           canvas.width = Math.floor(viewport.width);
           canvas.height = Math.floor(viewport.height);
-          canvas.style.width = `${Math.floor(viewport.width / dpr)}px`;
-          canvas.style.height = "auto";
-          canvas.className = "mx-auto block rounded-xl bg-white shadow-lg";
-          canvas.dataset.page = String(n);
+          const ctx = canvas.getContext("2d");
+          if (!ctx) return;
+          await page.render({ canvas, canvasContext: ctx, viewport }).promise;
+        };
 
+        observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              const canvas = entry.target as HTMLCanvasElement;
+              void renderPage(Number(canvas.dataset.page), canvas);
+            });
+          },
+          { root: scroller, rootMargin: "800px 0px" },
+        );
+
+        for (let n = 1; n <= doc.numPages; n++) {
+          const canvas = document.createElement("canvas");
+          canvas.dataset.page = String(n);
+          canvas.className = "mx-auto block rounded-xl bg-white shadow-lg";
+          canvas.style.width = `${cssWidth}px`;
+          canvas.style.height = `${Math.round(cssWidth * ratio)}px`;
           const wrap = document.createElement("div");
-          wrap.className = "mb-4";
+          wrap.className = "mb-4 w-full overflow-x-auto";
           wrap.appendChild(canvas);
           host.appendChild(wrap);
-
-          const ctx = canvas.getContext("2d");
-          if (ctx) await page.render({ canvas, canvasContext: ctx, viewport }).promise;
-          if (n === 1) setLoading(false);
+          observer.observe(canvas);
         }
-        setLoading(false);
+
+        await renderPage(1, host.querySelector<HTMLCanvasElement>("canvas[data-page='1']")!);
+        if (!cancelled) setLoading(false);
       } catch (err) {
-        console.error("pdf render failed", err);
+        console.error("PDF preview failed", err);
         if (!cancelled) {
           setFailed(true);
           setLoading(false);
@@ -89,6 +119,7 @@ export function PdfViewer({ product, onClose }: Props) {
 
     return () => {
       cancelled = true;
+      observer?.disconnect();
     };
   }, [product.url, zoomIdx]);
 
