@@ -283,7 +283,8 @@ export function MathRacer({ onExit }: { level?: 1 | 2 | 3; onExit: () => void })
             <StageBanner act={act + 1} title={stage.title} emoji={stage.emoji} onDone={() => setPhase("race")} />
           )}
         </div>
-      </div>
+      </GameStage>
+
       <p className="mt-2 text-center text-sm font-bold text-muted-foreground">
         Tap a lane (or use ← →) to drive into the correct answer!
       </p>
