@@ -32,7 +32,7 @@ export const Route = createFileRoute("/purchases/$productId")({
 });
 
 function ProductPage() {
-  const { product } = Route.useLoaderData();
+  const { product } = Route.useLoaderData() as { product: Product };
   const [viewing, setViewing] = useState<{ url: string; name: string; filename: string } | null>(null);
 
   return (
