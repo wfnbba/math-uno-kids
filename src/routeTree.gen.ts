@@ -14,7 +14,6 @@ import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as PlayRouteImport } from './routes/play'
 import { Route as ParentsRouteImport } from './routes/parents'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
-import { Route as NewsRouteImport } from './routes/news'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PurchasesIndexRouteImport } from './routes/purchases.index'
 import { Route as PurchasesProductIdRouteImport } from './routes/purchases.$productId'
@@ -44,11 +43,6 @@ const OnboardingRoute = OnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NewsRoute = NewsRouteImport.update({
-  id: '/news',
-  path: '/news',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -67,7 +61,6 @@ const PurchasesProductIdRoute = PurchasesProductIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/news': typeof NewsRoute
   '/onboarding': typeof OnboardingRoute
   '/parents': typeof ParentsRoute
   '/play': typeof PlayRoute
@@ -78,7 +71,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/news': typeof NewsRoute
   '/onboarding': typeof OnboardingRoute
   '/parents': typeof ParentsRoute
   '/play': typeof PlayRoute
@@ -90,7 +82,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/news': typeof NewsRoute
   '/onboarding': typeof OnboardingRoute
   '/parents': typeof ParentsRoute
   '/play': typeof PlayRoute
@@ -103,7 +94,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/news'
     | '/onboarding'
     | '/parents'
     | '/play'
@@ -114,7 +104,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/news'
     | '/onboarding'
     | '/parents'
     | '/play'
@@ -125,7 +114,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/news'
     | '/onboarding'
     | '/parents'
     | '/play'
@@ -137,7 +125,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  NewsRoute: typeof NewsRoute
   OnboardingRoute: typeof OnboardingRoute
   ParentsRoute: typeof ParentsRoute
   PlayRoute: typeof PlayRoute
@@ -184,13 +171,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/news': {
-      id: '/news'
-      path: '/news'
-      fullPath: '/news'
-      preLoaderRoute: typeof NewsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -217,7 +197,6 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  NewsRoute: NewsRoute,
   OnboardingRoute: OnboardingRoute,
   ParentsRoute: ParentsRoute,
   PlayRoute: PlayRoute,
