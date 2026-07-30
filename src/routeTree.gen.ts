@@ -14,8 +14,9 @@ import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as PlayRouteImport } from './routes/play'
 import { Route as ParentsRouteImport } from './routes/parents'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
-import { Route as NewsRouteImport } from './routes/news'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PurchasesIndexRouteImport } from './routes/purchases.index'
+import { Route as PurchasesProductIdRouteImport } from './routes/purchases.$productId'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -42,83 +43,95 @@ const OnboardingRoute = OnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NewsRoute = NewsRouteImport.update({
-  id: '/news',
-  path: '/news',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PurchasesIndexRoute = PurchasesIndexRouteImport.update({
+  id: '/purchases/',
+  path: '/purchases/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PurchasesProductIdRoute = PurchasesProductIdRouteImport.update({
+  id: '/purchases/$productId',
+  path: '/purchases/$productId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/news': typeof NewsRoute
   '/onboarding': typeof OnboardingRoute
   '/parents': typeof ParentsRoute
   '/play': typeof PlayRoute
   '/progress': typeof ProgressRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/purchases/$productId': typeof PurchasesProductIdRoute
+  '/purchases/': typeof PurchasesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/news': typeof NewsRoute
   '/onboarding': typeof OnboardingRoute
   '/parents': typeof ParentsRoute
   '/play': typeof PlayRoute
   '/progress': typeof ProgressRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/purchases/$productId': typeof PurchasesProductIdRoute
+  '/purchases': typeof PurchasesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/news': typeof NewsRoute
   '/onboarding': typeof OnboardingRoute
   '/parents': typeof ParentsRoute
   '/play': typeof PlayRoute
   '/progress': typeof ProgressRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/purchases/$productId': typeof PurchasesProductIdRoute
+  '/purchases/': typeof PurchasesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/news'
     | '/onboarding'
     | '/parents'
     | '/play'
     | '/progress'
     | '/sitemap.xml'
+    | '/purchases/$productId'
+    | '/purchases/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/news'
     | '/onboarding'
     | '/parents'
     | '/play'
     | '/progress'
     | '/sitemap.xml'
+    | '/purchases/$productId'
+    | '/purchases'
   id:
     | '__root__'
     | '/'
-    | '/news'
     | '/onboarding'
     | '/parents'
     | '/play'
     | '/progress'
     | '/sitemap.xml'
+    | '/purchases/$productId'
+    | '/purchases/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  NewsRoute: typeof NewsRoute
   OnboardingRoute: typeof OnboardingRoute
   ParentsRoute: typeof ParentsRoute
   PlayRoute: typeof PlayRoute
   ProgressRoute: typeof ProgressRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  PurchasesProductIdRoute: typeof PurchasesProductIdRoute
+  PurchasesIndexRoute: typeof PurchasesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -158,13 +171,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/news': {
-      id: '/news'
-      path: '/news'
-      fullPath: '/news'
-      preLoaderRoute: typeof NewsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -172,17 +178,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/purchases/': {
+      id: '/purchases/'
+      path: '/purchases'
+      fullPath: '/purchases/'
+      preLoaderRoute: typeof PurchasesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/purchases/$productId': {
+      id: '/purchases/$productId'
+      path: '/purchases/$productId'
+      fullPath: '/purchases/$productId'
+      preLoaderRoute: typeof PurchasesProductIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  NewsRoute: NewsRoute,
   OnboardingRoute: OnboardingRoute,
   ParentsRoute: ParentsRoute,
   PlayRoute: PlayRoute,
   ProgressRoute: ProgressRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  PurchasesProductIdRoute: PurchasesProductIdRoute,
+  PurchasesIndexRoute: PurchasesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
