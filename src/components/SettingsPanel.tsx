@@ -58,22 +58,8 @@ export function SettingsPanel({ onEditProfile }: { onEditProfile?: () => void })
         </div>
       )}
 
-      {view === "billing" && (
-        <div className="space-y-3 text-base font-bold">
-          <InfoRow label="Plan" value="UNO Method Weekly" />
-          <InfoRow label="Status" value="Active" />
-          <InfoRow label="Includes" value="Decks, games & printables" />
-          <p className="rounded-2xl bg-muted p-4 text-sm font-bold text-muted-foreground">
-            To cancel or request a refund, go to <strong className="text-foreground">Support</strong>.
-          </p>
-          <button
-            onClick={() => setView("support")}
-            className="btn-bounce w-full rounded-2xl border-2 border-border bg-muted px-4 py-3 font-display text-base font-bold text-muted-foreground"
-          >
-            💬 Go to Support
-          </button>
-        </div>
-      )}
+
+
 
       {view === "about" && (
         <div className="space-y-3 text-base font-bold">
