@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { CancelSubscription } from "@/components/CancelSubscription";
 
-type View = "menu" | "support" | "billing" | "about";
+type View = "menu" | "support" | "about";
 
 export function SettingsPanel({ onEditProfile }: { onEditProfile?: () => void }) {
   const [open, setOpen] = useState(false);
@@ -31,7 +31,6 @@ export function SettingsPanel({ onEditProfile }: { onEditProfile?: () => void })
         <h2 className="font-display text-xl font-extrabold">
           {view === "menu" && "⚙️ Settings"}
           {view === "support" && "💬 Support"}
-          {view === "billing" && "🧾 Billing & Plan"}
           {view === "about" && "ℹ️ About"}
         </h2>
         <button
@@ -47,8 +46,8 @@ export function SettingsPanel({ onEditProfile }: { onEditProfile?: () => void })
           {onEditProfile && (
             <MenuItem emoji="🦊" label="Kid profile" desc="Name, level and theme" onClick={onEditProfile} />
           )}
-          <MenuItem emoji="🧾" label="Billing & plan" desc="Your membership details" onClick={() => setView("billing")} />
           <MenuItem
+
             emoji="💬"
             label="Support"
             desc="Help, contact and cancellation"
@@ -58,22 +57,8 @@ export function SettingsPanel({ onEditProfile }: { onEditProfile?: () => void })
         </div>
       )}
 
-      {view === "billing" && (
-        <div className="space-y-3 text-base font-bold">
-          <InfoRow label="Plan" value="UNO Method Weekly" />
-          <InfoRow label="Status" value="Active" />
-          <InfoRow label="Includes" value="Decks, games & printables" />
-          <p className="rounded-2xl bg-muted p-4 text-sm font-bold text-muted-foreground">
-            To cancel or request a refund, go to <strong className="text-foreground">Support</strong>.
-          </p>
-          <button
-            onClick={() => setView("support")}
-            className="btn-bounce w-full rounded-2xl border-2 border-border bg-muted px-4 py-3 font-display text-base font-bold text-muted-foreground"
-          >
-            💬 Go to Support
-          </button>
-        </div>
-      )}
+
+
 
       {view === "about" && (
         <div className="space-y-3 text-base font-bold">
