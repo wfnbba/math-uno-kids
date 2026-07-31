@@ -15,7 +15,7 @@ import {
 } from "@/lib/store";
 import { BottomNav } from "@/components/BottomNav";
 import { ProfileSetup } from "@/components/ProfileSetup";
-import { CancelSubscription } from "@/components/CancelSubscription";
+import { SettingsPanel } from "@/components/SettingsPanel";
 
 export const Route = createFileRoute("/parents")({
   head: () => ({
