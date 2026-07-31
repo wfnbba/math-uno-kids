@@ -217,8 +217,9 @@ function Parents() {
       </section>
 
       <div className="mt-8">
-        <CancelSubscription />
+        <SettingsPanel onEditProfile={() => setEditing(true)} />
       </div>
+
 
       <BottomNav />
     </div>
