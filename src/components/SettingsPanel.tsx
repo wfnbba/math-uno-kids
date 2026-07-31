@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { CancelSubscription } from "@/components/CancelSubscription";
 
-type View = "menu" | "support" | "billing" | "about";
+type View = "menu" | "support" | "about";
 
 export function SettingsPanel({ onEditProfile }: { onEditProfile?: () => void }) {
   const [open, setOpen] = useState(false);
@@ -31,7 +31,6 @@ export function SettingsPanel({ onEditProfile }: { onEditProfile?: () => void })
         <h2 className="font-display text-xl font-extrabold">
           {view === "menu" && "⚙️ Settings"}
           {view === "support" && "💬 Support"}
-          {view === "billing" && "🧾 Billing & Plan"}
           {view === "about" && "ℹ️ About"}
         </h2>
         <button
