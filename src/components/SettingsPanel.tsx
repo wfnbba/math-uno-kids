@@ -47,8 +47,8 @@ export function SettingsPanel({ onEditProfile }: { onEditProfile?: () => void })
           {onEditProfile && (
             <MenuItem emoji="🦊" label="Kid profile" desc="Name, level and theme" onClick={onEditProfile} />
           )}
-          <MenuItem emoji="🧾" label="Billing & plan" desc="Your membership details" onClick={() => setView("billing")} />
           <MenuItem
+
             emoji="💬"
             label="Support"
             desc="Help, contact and cancellation"
