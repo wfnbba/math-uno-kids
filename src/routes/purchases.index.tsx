@@ -25,7 +25,7 @@ export const Route = createFileRoute("/purchases/")({
 
 function Purchases() {
   return (
-    <div className="mx-auto min-h-screen max-w-md px-4 pb-28 pt-6 md:max-w-3xl">
+    <div className="mx-auto min-h-screen w-full px-4 pb-28 pt-6">
       <header className="shadow-pop mb-6 rounded-3xl border-4 border-border bg-gradient-to-br from-fun-purple via-fun-blue to-fun-green p-5 text-center animate-pop-in">
         <p className="font-display text-sm font-extrabold uppercase tracking-widest text-primary-foreground/90">
           UNO Method

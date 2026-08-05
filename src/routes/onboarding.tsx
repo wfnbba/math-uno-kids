@@ -78,7 +78,7 @@ function Onboarding() {
 
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-md flex-col px-6 py-8">
+    <div className="mx-auto flex min-h-screen w-full flex-col px-6 py-8">
       <div className="mb-8 flex justify-center gap-2">
         {Array.from({ length: STEPS }).map((_, i) => (
           <span

@@ -44,7 +44,7 @@ function Progress() {
   }
 
   return (
-    <div className="mx-auto min-h-screen max-w-md px-4 pb-28 pt-6">
+    <div className="mx-auto min-h-screen w-full px-4 pb-28 pt-6">
       <h1 className="mb-6 text-center font-display text-3xl font-extrabold text-primary">
         {profile.name}'s Progress ⭐
       </h1>

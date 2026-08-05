@@ -104,7 +104,7 @@ function Play() {
   };
 
   return (
-    <div className="mx-auto min-h-screen max-w-md px-4 pb-28 pt-6">
+    <div className="mx-auto min-h-screen w-full px-4 pb-28 pt-6">
       {screen === "hub" && (
         <GamesHub name={profile.name} rm={rm} onOpen={(id) => setScreen(id)} />
       )}
