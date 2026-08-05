@@ -31,7 +31,7 @@ function Index() {
   }, []);
 
   return (
-    <div className="mx-auto min-h-screen max-w-md px-4 pb-28 pt-6 text-lg">
+    <div className="mx-auto min-h-screen w-full px-4 pb-28 pt-6 text-lg">
       <div className="sticky top-2 z-40 mb-4">
         <InstallButton />
       </div>

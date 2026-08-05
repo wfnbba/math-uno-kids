@@ -67,7 +67,7 @@ function Parents() {
 
   if (!profile || editing) {
     return (
-      <div className="mx-auto min-h-screen max-w-md px-4 pb-28 pt-6">
+      <div className="mx-auto min-h-screen w-full px-4 pb-28 pt-6">
         <h1 className="mb-4 text-center font-display text-3xl font-extrabold text-primary">
           {profile ? "Edit Profile ✏️" : "Set Up Kid Profile 🦊"}
         </h1>
@@ -131,7 +131,7 @@ function Parents() {
   }
 
   return (
-    <div className="mx-auto min-h-screen max-w-md px-4 pb-28 pt-6">
+    <div className="mx-auto min-h-screen w-full px-4 pb-28 pt-6">
       <h1 className="mb-2 text-center font-display text-3xl font-extrabold text-primary">Parent Dashboard 📊</h1>
       <div className="mb-6 flex items-center justify-center gap-2">
         <span className="rounded-full bg-muted px-3 py-1 text-sm font-bold text-muted-foreground">

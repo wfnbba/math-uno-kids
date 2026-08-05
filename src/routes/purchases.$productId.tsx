@@ -36,7 +36,7 @@ function ProductPage() {
   const [viewing, setViewing] = useState<{ url: string; name: string; filename: string } | null>(null);
 
   return (
-    <div className="mx-auto min-h-screen max-w-md px-4 pb-28 pt-4 md:max-w-2xl">
+    <div className="mx-auto min-h-screen w-full px-4 pb-28 pt-4">
       <Link
         to="/purchases"
         className="btn-bounce mb-4 inline-block rounded-2xl border-4 border-border bg-card px-4 py-2 font-display text-base font-extrabold"

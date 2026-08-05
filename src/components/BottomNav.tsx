@@ -12,8 +12,8 @@ export function BottomNav() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 border-t-4 border-border bg-card pb-[env(safe-area-inset-bottom)]">
-      <div className="mx-auto flex max-w-md items-stretch justify-around px-1">
+    <nav className="fixed bottom-0 left-1/2 z-50 w-full max-w-[430px] -translate-x-1/2 border-t-4 border-border bg-card pb-[env(safe-area-inset-bottom)] md:border-x-4">
+      <div className="flex items-stretch justify-around px-1">
         {TABS.map((tab) => {
           const active = tab.to === "/" ? pathname === "/" : pathname.startsWith(tab.to);
           return (
