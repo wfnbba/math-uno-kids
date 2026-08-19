@@ -105,11 +105,8 @@ export function CancelSubscription() {
           Your request has been confirmed and you will not be billed again. Refunds usually take{" "}
           <strong className="text-foreground">5–10 business days</strong> to appear on your credit or debit card
           statement — the exact timing varies from bank to bank. You'll also receive a confirmation email at{" "}
-          <strong className="text-foreground break-all">{form.email}</strong>. Any questions, contact{" "}
-          <a className="text-foreground underline" href="mailto:support@unomethod.com">
-            support@unomethod.com
-          </a>
-          .
+          <strong className="text-foreground break-all">{form.email}</strong>. Any questions, contact our support team
+          through your account dashboard.
         </p>
         <button
           onClick={stay}
