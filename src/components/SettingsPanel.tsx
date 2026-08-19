@@ -64,21 +64,11 @@ export function SettingsPanel({ onEditProfile }: { onEditProfile?: () => void })
         <div className="space-y-3 text-base font-bold">
           <InfoRow label="App" value="UNO Method" />
           <InfoRow label="Version" value="1.0.0" />
-          <InfoRow label="Contact" value="support@unomethod.com" />
         </div>
       )}
 
       {view === "support" && (
         <div className="space-y-3">
-          <a
-            href="mailto:support@unomethod.com"
-            className="btn-bounce block w-full rounded-2xl border-4 border-border bg-background px-4 py-4 text-left"
-          >
-            <span className="font-display text-base font-extrabold">📧 Email our team</span>
-            <span className="mt-1 block text-sm font-bold text-muted-foreground">
-              We usually reply within 24 hours
-            </span>
-          </a>
           <div className="rounded-2xl border-4 border-border bg-background px-4 py-4">
             <p className="font-display text-base font-extrabold">❓ Printing help</p>
             <p className="mt-1 text-sm font-bold text-muted-foreground">
