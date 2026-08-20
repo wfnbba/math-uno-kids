@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
-type RequestType = "cancel" | "refund" | "both" | "pause";
+type RequestType = "refund" | "help";
 
-type Step = "closed" | "type" | "s1" | "s2" | "s3" | "form" | "loading" | "done";
+type Step = "closed" | "type" | "s1" | "s2" | "form" | "loading" | "done";
 
 interface FormData {
   name: string;
@@ -12,35 +12,23 @@ interface FormData {
 }
 
 const TYPE_META: Record<RequestType, { label: string; emoji: string; desc: string; status: string }> = {
-  cancel: {
-    label: "Cancel subscription",
-    emoji: "🚪",
-    desc: "Stop future billing. Keep access until the end of the period.",
-    status: "Cancelled immediately",
-  },
   refund: {
     label: "Request a refund",
     emoji: "💸",
-    desc: "Get your money back for your latest charge.",
+    desc: "Get your money back for your one-time purchase.",
     status: "Refund approved",
   },
-  both: {
-    label: "Cancel + refund",
-    emoji: "🧾",
-    desc: "Cancel the membership and refund the last payment.",
-    status: "Cancelled + refund approved",
-  },
-  pause: {
-    label: "Pause for 30 days",
-    emoji: "⏸️",
-    desc: "Take a break. Nothing is billed while paused.",
-    status: "Paused for 30 days",
+  help: {
+    label: "Problem with my order",
+    emoji: "🛠️",
+    desc: "Files not opening, download issues or wrong product.",
+    status: "Order review requested",
   },
 };
 
-export function CancelSubscription() {
+export function RefundRequest() {
   const [step, setStep] = useState<Step>("closed");
-  const [type, setType] = useState<RequestType>("cancel");
+  const [type, setType] = useState<RequestType>("refund");
   const [form, setForm] = useState<FormData>({ name: "", email: "", purchaseDate: "", reason: "" });
   const [error, setError] = useState<string | null>(null);
   const [reference] = useState(() => `UNO-${Date.now().toString().slice(-8)}`);
@@ -102,7 +90,7 @@ export function CancelSubscription() {
           <Row label="Requested on" value={new Date().toLocaleDateString("en-US")} />
         </dl>
         <p className="mt-4 rounded-2xl bg-muted p-4 text-sm font-bold text-muted-foreground">
-          Your request has been confirmed and you will not be billed again. Refunds usually take{" "}
+          Your request has been confirmed. Refunds usually take{" "}
           <strong className="text-foreground">5–10 business days</strong> to appear on your credit or debit card
           statement — the exact timing varies from bank to bank. You'll also receive a confirmation email at{" "}
           <strong className="text-foreground break-all">{form.email}</strong>. Any questions, contact our support team
@@ -120,9 +108,9 @@ export function CancelSubscription() {
 
   return (
     <section className="mb-8 rounded-3xl border-4 border-border bg-card p-5">
-      <h2 className="font-display text-xl font-extrabold">Cancel / Refund</h2>
+      <h2 className="font-display text-xl font-extrabold">Refund / Order help</h2>
       <p className="mt-1 text-base font-bold text-muted-foreground">
-        Manage your UNO Method membership — cancel, request a refund or pause your plan.
+        Something wrong with your one-time purchase? Request a refund or get help with your order.
       </p>
 
       {step === "closed" && (
@@ -130,7 +118,7 @@ export function CancelSubscription() {
           onClick={() => setStep("type")}
           className="mt-4 w-full rounded-2xl border-2 border-border bg-muted px-4 py-3 font-display text-base font-bold text-muted-foreground"
         >
-          Cancel / Refund
+          Refund / Order help
         </button>
       )}
 
@@ -165,9 +153,9 @@ export function CancelSubscription() {
 
       {step === "s1" && (
         <OfferStep
-          title="Are you sure you want to leave? 😢"
-          text="You will lose every weekly deck drop, the FIFA World Cup 2026 edition updates and all premium games."
-          keepLabel="🎉 Keep my subscription"
+          title="Are you sure? 😢"
+          text="You will lose access to your printable decks, the FIFA World Cup 2026 edition and all premium games."
+          keepLabel="🎉 Keep my decks"
           keepClass="bg-fun-green text-primary-foreground"
           onKeep={stay}
           onNext={() => setStep("s2")}
@@ -177,21 +165,9 @@ export function CancelSubscription() {
 
       {step === "s2" && (
         <OfferStep
-          title="How about a free month instead? 🎁"
-          text="Stay with us and your next 30 days are on the house — same decks, same games, zero charge."
-          keepLabel="🎁 Claim my free month"
-          keepClass="bg-fun-yellow text-foreground"
-          onKeep={stay}
-          onNext={() => setStep("s3")}
-          nextLabel="No thanks, continue"
-        />
-      )}
-
-      {step === "s3" && (
-        <OfferStep
-          title="Your kid's progress will be paused ⭐"
-          text="Streaks, badges and the Math Road journey stay locked until you come back."
-          keepLabel="⭐ Keep the progress, stay subscribed"
+          title="Your kid's progress will be lost ⭐"
+          text="Streaks, badges and the Math Road journey stay locked once your access is removed."
+          keepLabel="⭐ Keep the progress"
           keepClass="bg-fun-blue text-primary-foreground"
           onKeep={stay}
           onNext={() => setStep("form")}
@@ -232,7 +208,7 @@ export function CancelSubscription() {
             onClick={stay}
             className="btn-bounce shadow-pop mt-4 w-full rounded-2xl border-4 border-border bg-fun-green px-4 py-4 font-display text-lg font-extrabold text-primary-foreground"
           >
-            ← Never mind, keep my subscription
+            ← Never mind, keep my access
           </button>
           <button
             onClick={submit}
