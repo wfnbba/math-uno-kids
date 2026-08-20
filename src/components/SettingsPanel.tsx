@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CancelSubscription } from "@/components/CancelSubscription";
+import { RefundRequest } from "@/components/RefundRequest";
 
 type View = "menu" | "support" | "about";
 
@@ -50,7 +50,7 @@ export function SettingsPanel({ onEditProfile }: { onEditProfile?: () => void })
 
             emoji="💬"
             label="Support"
-            desc="Help, contact and cancellation"
+            desc="Help, contact and refunds"
             onClick={() => setView("support")}
           />
           <MenuItem emoji="ℹ️" label="About" desc="App version and legal" onClick={() => setView("about")} />
@@ -76,7 +76,7 @@ export function SettingsPanel({ onEditProfile }: { onEditProfile?: () => void })
             </p>
           </div>
           <div className="pt-1">
-            <CancelSubscription />
+            <RefundRequest />
           </div>
         </div>
       )}
